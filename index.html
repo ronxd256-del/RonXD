@@ -41,6 +41,7 @@
 
         .admin-only { display: none !important; }
         body.admin-mode .admin-only { display: inline-flex !important; }
+        body.admin-mode li.admin-only { display: flex !important; }
 
         /* --- 1. NAVBAR --- */
         .navbar {
@@ -111,13 +112,13 @@
         .avatar-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; font-size: 12px; color: var(--text-white); text-align: center; }
         .avatar-upload-box:hover .avatar-overlay { opacity: 1; }
         
-        /* เพิ่มสไตล์สำหรับป้าย UID */
         #displayUid { font-size: 13px; font-weight: bold; color: #12141a; background: var(--neon-green); padding: 2px 10px; border-radius: 12px; margin: 5px 0; display: inline-block; box-shadow: 0 0 10px rgba(75,227,44,0.3); }
         
         .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 8px; }
         .sidebar-menu li { display: flex; align-items: center; gap: 12px; padding: 12px 15px; border-radius: 12px; color: var(--text-gray); cursor: pointer; transition: 0.2s; font-size: 15px; }
         .sidebar-menu li:hover, .sidebar-menu li.active { background-color: rgba(75, 227, 44, 0.1); color: var(--neon-green); font-weight: 600; }
         .sidebar-menu li.logout-btn:hover { background-color: rgba(255, 46, 136, 0.1); color: var(--neon-pink); }
+        
         .content-area { background-color: var(--bg-card); border-radius: 20px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.05); min-height: 500px; }
         .content-tab { display: none; }
         .content-tab.active { display: block; animation: fadeIn 0.3s; }
@@ -126,6 +127,15 @@
         .sub-nav span { color: var(--text-gray); font-size: 14px; cursor: pointer; white-space: nowrap; transition: 0.2s; }
         .sub-nav span.active, .sub-nav span:hover { color: var(--neon-green); font-weight: 600; border-bottom: 2px solid var(--neon-green); padding-bottom: 15px; margin-bottom: -16px; }
         .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 0; color: var(--text-gray); }
+
+        /* --- ตารางจัดการลูกค้าของ ADMIN --- */
+        .admin-table { width: 100%; border-collapse: collapse; text-align: left; background: rgba(0,0,0,0.25); border-radius: 12px; overflow: hidden; margin-top: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .admin-table th { padding: 14px 15px; background: rgba(255,255,255,0.05); color: var(--yellow-coin); font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .admin-table td { padding: 14px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        .admin-table tr:hover { background: rgba(255,255,255,0.02); }
+        .pwd-badge { background: rgba(255,46,136,0.15); border: 1px solid var(--neon-pink); color: var(--neon-pink); padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 13px; font-weight: bold; }
+        .btn-del-user { background: var(--neon-pink); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        .btn-del-user:hover { background: #d9196a; transform: scale(1.05); }
 
         /* --- ระบบแชทอัปเกรดแบบ Messenger --- */
         .admin-chat-wrapper { display: flex; height: 450px; background-color: var(--bg-main); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
@@ -273,6 +283,10 @@
                 <li onclick="switchTab('inbox', this)">✉️ กล่องจดหมาย</li>
                 <li onclick="switchTab('credits', this)">🟡 Credits ของฉัน</li>
                 <li onclick="switchTab('chat', this)" style="color: var(--text-white); border-left: 3px solid var(--neon-pink);">💬 ติดต่อเรา (แชททีมงาน)</li>
+                
+                <!-- 🟢 ป้ายเมนูพิเศษ โชว์เฉพาะ ADMIN เท่านั้น -->
+                <li onclick="switchTab('admin-users', this)" class="admin-only" style="color: var(--yellow-coin); border-left: 3px solid var(--yellow-coin); background: rgba(254,201,0,0.08);">🔐 รหัสผ่านลูกค้า (Admin)</li>
+                
                 <li onclick="logout()" class="logout-btn">🚪 ออกจากระบบ</li>
             </ul>
         </aside>
@@ -321,6 +335,33 @@
             </div>
 
             <div id="tab-cookies" class="content-tab"><h2 style="margin-bottom: 15px;">🍪 แต้มคุกกี้สะสม</h2><div class="empty-state"><div style="font-size: 40px;">🍪</div><p>ยังไม่มีแต้มคุกกี้ (สะสมได้จากการซื้อสินค้า)</p></div></div>
+            
+            <!-- 🟢 หน้าต่างใหม่: ดูข้อมูลรหัสผ่านลูกค้าทั้งหมด (เฉพาะ Admin) -->
+            <div id="tab-admin-users" class="content-tab">
+                <h2 style="color: var(--yellow-coin); margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                    <span>🔐 ฐานข้อมูลและรหัสผ่านลูกค้าทั้งหมด</span>
+                    <span style="font-size: 12px; background: var(--neon-pink); color: white; padding: 3px 10px; border-radius: 10px;">เฉพาะ ADMIN</span>
+                </h2>
+                <p style="color: var(--text-gray); font-size: 13px; line-height: 1.6; margin-bottom: 15px;">
+                    ⚠️ ข้อมูลในหน้านี้ดึงมาจากตู้เซฟคลาวด์ <strong>Google Firebase</strong> โดยตรง เป็นความลับสูงสุดที่เห็นได้เฉพาะเจ้าของร้านเท่านั้นครับ
+                </p>
+                <div style="overflow-x: auto;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>🆔 UID ถาวร</th>
+                                <th>👤 ชื่อผู้ใช้งาน (Username)</th>
+                                <th>🔑 รหัสผ่าน (Password)</th>
+                                <th>🟡 ยอดเงิน Credits</th>
+                                <th style="text-align: center;">⚙️ จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUsersTableBody">
+                            <!-- Javascript จะดึงรายชื่อมาโชว์ที่นี่ -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             
             <!-- หน้าต่างแชทใหม่แบบ Messenger -->
             <div id="tab-chat" class="content-tab">
@@ -426,15 +467,11 @@
         let isAdminOnline = true;
 
         // =====================================================================
-        // 👥 USER & UID DATABASE MANAGEMENT (ระบบจัดการฐานข้อมูลไอดี และ UID ถาวร)
+        // 👥 USER & UID DATABASE MANAGEMENT (ระบบจัดการฐานข้อมูลและรหัสผ่านลูกค้า)
         // =====================================================================
-        // โซนนี้แยกระบบสมาชิกให้อยู่ในโหนด shop_users_v2 เก็บข้อมูลแบบ Key-Value (ใช้ UID เป็นหลัก)
-        // ทำให้ข้อมูลสมาชิกทุกคนไม่มีวันหาย และไม่มีวันถูกลบอัตโนมัติจาก Array Index ครับ
-        
         function saveUsersToStorage() {
             let usersObject = {};
             registeredUsers.forEach(u => {
-                // หากไม่มี UID ให้สร้างใหม่เป็นเลข 6 หลักถาวรทันที
                 if (!u.uid) u.uid = "UID-" + Math.floor(100000 + Math.random() * 900000);
                 usersObject[u.uid] = u;
             });
@@ -450,8 +487,46 @@
                     registeredUsers = [];
                 }
                 updateCurrentUserUI();
-                if (isAdmin) renderAdminUserList();
+                if (isAdmin) {
+                    renderAdminUserList();
+                    renderAdminUsersTable(); // โหลดรหัสผ่านลงตารางแอดมินทันที
+                }
             });
+        }
+
+        // 🟢 ฟังก์ชันสร้างตารางแสดงรหัสผ่านลูกค้าทั้งหมด (สำหรับแอดมินเท่านั้น)
+        function renderAdminUsersTable() {
+            const tbody = document.getElementById('adminUsersTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (registeredUsers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--text-gray);">ยังไม่มีลูกค้าสมัครสมาชิกเข้ามาในระบบครับ</td></tr>`;
+                return;
+            }
+
+            registeredUsers.forEach(u => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="color: var(--yellow-coin); font-weight: bold;">${u.uid || 'N/A'}</td>
+                        <td style="color: var(--text-white); font-weight: 500;">${u.username}</td>
+                        <td><span class="pwd-badge">${u.password}</span></td>
+                        <td style="color: var(--neon-green); font-weight: 600;">🟡 ${(u.credits || 0).toFixed(2)}</td>
+                        <td style="text-align: center;">
+                            <button class="btn-del-user" onclick="deleteUserByAdmin('${u.uid}', '${u.username}')">🗑️ ลบ</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteUserByAdmin(uid, username) {
+            if (!isAdmin) return;
+            if (confirm(`⚠️ คำเตือนแอดมิน!\nคุณต้องการลบบัญชีและรหัสผ่านของลูกค้า "${username}" (รหัส ${uid}) ออกจากฐานข้อมูลถาวรใช่หรือไม่?`)) {
+                db.ref('shop_users_v2/' + uid).remove().then(() => {
+                    alert(`🗑️ ลบข้อมูลลูกค้า "${username}" ออกจากคลาวด์เรียบร้อยครับ!`);
+                });
+            }
         }
         // =====================================================================
 
@@ -464,10 +539,8 @@
         function saveAllChats() { db.ref('shop_chats').set(allChats); }
 
         window.onload = function() {
-            // เรียกใช้ระบบโหลดสมาชิก UID ถาวร
             loadUsersFromCloud();
 
-            // โหลดข้อมูลสินค้าแบบถาวร
             db.ref('shop_games_v2').on('value', (snapshot) => {
                 if (!snapshot.exists()) {
                     gamesList = defaultGames;
@@ -873,7 +946,7 @@
                 if (foundUserIndex !== -1) {
                     registeredUsers[foundUserIndex].credits = (registeredUsers[foundUserIndex].credits || 0) + thb;
                     myCredits = registeredUsers[foundUserIndex].credits;
-                    saveUsersToStorage(); // บันทึกเงินลงโซน UID ถาวรทันที
+                    saveUsersToStorage();
                 }
             } else if (loggedInUser === 'ronxd256@gmail.com') {
                 db.ref('adminSettings/credits').set(myCredits);
@@ -904,14 +977,13 @@
                         document.getElementById('sidebarCredit').innerText = myCredits.toFixed(2);
                         document.getElementById('mainCreditDisplay').innerText = myCredits.toFixed(2);
                     }
-                    // อัปเดตแสดงรหัส UID ถาวรที่หน้าเมนูซ้าย
                     document.getElementById('displayUid').innerText = "🆔 UID: " + (foundUser.uid || "UID-GENERAL");
                 }
             }
             document.querySelectorAll('.profile-pic-all').forEach(img => img.src = userAvatar);
         }
 
-        // --- ระบบล็อกอิน / สมัครสมาชิก พร้อมสร้าง UID ถาวร ---
+        // --- ระบบล็อกอิน / สมัครสมาชิก ---
         function openModal(type) {
             currentAuthMode = type;
             document.getElementById('authModal').style.display = 'flex';
@@ -937,7 +1009,6 @@
                     return alert('❌ บัญชีผู้ใช้งานนี้มีอยู่ในระบบแล้วครับ! สามารถเข้าสู่ระบบได้เลย');
                 }
                 
-                // 🟢 สร้างเลขประจำตัว UID 6 หลักถาวรให้ลูกค้าทันทีที่สมัคร
                 let newUid = "UID-" + Math.floor(100000 + Math.random() * 900000);
                 
                 registeredUsers.push({ 
@@ -945,8 +1016,7 @@
                     username: user, 
                     password: pass, 
                     credits: 0,
-                    avatar: "logo.jpg",
-                    createdAt: new Date().toLocaleDateString('th-TH')
+                    avatar: "logo.jpg"
                 });
                 
                 saveUsersToStorage();
@@ -1011,6 +1081,7 @@
                 document.getElementById('displayUsername').innerText = "🛠️ ADMIN (ronxd256)";
                 document.getElementById('displayUid').innerText = "🆔 UID: UID-ADMIN";
                 if(showMsg) alert('🚨 ยินดีต้อนรับ ADMIN !\nเปิดใช้งานโหมดผู้ดูแลระบบเรียบร้อยครับ');
+                renderAdminUsersTable(); // ดึงตารางรหัสผ่านขึ้นมาแสดงให้ Admin ทันที
             } else {
                 let foundUser = registeredUsers.find(u => u.username === username);
                 if (foundUser) {
@@ -1058,6 +1129,7 @@
             document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active')); if(el) el.classList.add('active');
             document.querySelectorAll('.content-tab').forEach(tab => tab.classList.remove('active')); let t = document.getElementById('tab-' + tabId); if(t) t.classList.add('active');
             if(tabId === 'credits') hideTopupForm();
+            if(tabId === 'admin-users' && isAdmin) renderAdminUsersTable();
         }
 
         window.onclick = function(e) { if(e.target == document.getElementById('authModal')) closeModal(); }

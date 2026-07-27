@@ -69,9 +69,6 @@
         #shopView { display: block; }
         .banner-container { max-width: 1200px; margin: 20px auto 30px; padding: 0 5%; }
         .banner-placeholder { width: 100%; aspect-ratio: 16 / 5; background: linear-gradient(135deg, var(--bg-card), #252936); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; color: var(--text-gray); border: 2px dashed rgba(75, 227, 44, 0.3); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-        .filter-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
-        .filter-btn { background-color: var(--bg-card); color: var(--text-gray); border: 1px solid rgba(255, 255, 255, 0.05); padding: 8px 24px; border-radius: 25px; font-size: 15px; font-weight: 500; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
-        .filter-btn.active { border-color: var(--neon-green); color: var(--neon-green); background-color: rgba(75, 227, 44, 0.1); box-shadow: 0 0 15px rgba(75, 227, 44, 0.15); }
         .zone-header { max-width: 1100px; margin: 35px auto 15px; padding: 0 5%; display: flex; align-items: center; gap: 10px; }
         .zone-title { font-size: 20px; font-weight: 600; color: var(--text-white); border-left: 5px solid var(--neon-green); padding-left: 12px; text-shadow: 0 0 10px rgba(75, 227, 44, 0.2); }
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto; padding: 0 5%; }
@@ -91,7 +88,7 @@
         .admin-controls span { background: rgba(0,0,0,0.8); border: 1px solid var(--neon-green); border-radius: 6px; padding: 4px 6px; font-size: 12px; cursor: pointer; transition: 0.2s; }
         .admin-controls span:hover { transform: scale(1.1); background: var(--neon-green); }
 
-        .add-game-card .game-img-placeholder { border: 2px dashed var(--neon-pink) !important; background: rgba(255,46,136,0.05) !important; }
+        .add-game-card .game-img-placeholder { border: 2px dashed var(--neon-pink) !important; background: rgba(255,46,136,0.05) !important; aspect-ratio: 1 / 1 !important; }
         .add-game-card:hover .game-img-placeholder { background: rgba(255,46,136,0.15) !important; }
 
         /* --- 3. DASHBOARD VIEW --- */
@@ -115,43 +112,40 @@
         .sub-nav span.active, .sub-nav span:hover { color: var(--neon-green); font-weight: 600; border-bottom: 2px solid var(--neon-green); padding-bottom: 15px; margin-bottom: -16px; }
         .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 0; color: var(--text-gray); }
 
-        /* แชท */
-        .chat-container { display: flex; flex-direction: column; height: 400px; background-color: var(--bg-main); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        /* --- ระบบแชทอัปเกรดแบบ Messenger --- */
+        .admin-chat-wrapper { display: flex; height: 450px; background-color: var(--bg-main); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        .admin-user-list { width: 230px; background-color: var(--bg-card); border-right: 1px solid rgba(255,255,255,0.1); overflow-y: auto; display: none; flex-direction: column; }
+        body.admin-mode .admin-user-list { display: flex; }
+        .admin-user-item { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .admin-user-item:hover, .admin-user-item.active { background: rgba(75, 227, 44, 0.1); border-left: 3px solid var(--neon-green); }
+        .admin-user-item img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid var(--neon-green); }
+        .admin-user-info { overflow: hidden; }
+        .admin-user-name { font-size: 14px; font-weight: 500; color: var(--text-white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .admin-user-sub { font-size: 11px; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .chat-main-area { flex: 1; display: flex; flex-direction: column; height: 100%; }
         .chat-header { background-color: rgba(255,255,255,0.05); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 500; }
         .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .msg-bubble { max-width: 75%; padding: 10px 15px; border-radius: 15px; font-size: 14px; line-height: 1.4; position: relative; }
+        .msg-bubble { max-width: 75%; padding: 10px 15px; border-radius: 15px; font-size: 14px; line-height: 1.4; position: relative; word-break: break-word; }
         .msg-admin { align-self: flex-start; background-color: var(--bg-card); border: 1px solid rgba(255,255,255,0.1); color: var(--text-white); }
-        .chat-input-box { display: flex; padding: 15px; background-color: var(--bg-card); border-top: 1px solid rgba(255,255,255,0.05); gap: 10px; }
-        .chat-input-box input { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background-color: var(--bg-main); color: var(--text-white); outline: none; }
-        .chat-input-box button { background-color: var(--neon-green); color: #12141a; border: none; padding: 0 20px; border-radius: 20px; font-weight: 600; cursor: pointer; }
-
-        /* --- ซ่อนการตอบกลับจาก User ทั่วไป และตกแต่งระบบแชท --- */
         .msg-user { align-self: flex-end; background-color: var(--btn-purple); color: var(--text-white); }
-        /* ให้โชว์คำว่า กดเพื่อตอบกลับ เฉพาะตอนเป็นโหมด Admin เท่านั้น */
         body.admin-mode .msg-user { cursor: pointer; }
-        body.admin-mode .msg-user:hover::after { content: ' 💬 กดเพื่อตอบกลับ'; font-size: 11px; opacity: 0.7; }
+        body.admin-mode .msg-user:hover::after { content: ' 💬 กดตอบกลับ'; font-size: 11px; opacity: 0.7; }
         
-        /* กล่องพรีวิวข้อความก่อนที่แอดมินจะกดส่ง */
-        #replyPreviewBox {
-            display: none; background: rgba(108, 92, 231, 0.2); border-left: 4px solid var(--btn-purple);
-            padding: 10px 15px; font-size: 13px; color: var(--text-gray);
-            position: relative; align-items: center; justify-content: space-between;
-        }
+        #replyPreviewBox { display: none; background: rgba(108, 92, 231, 0.2); border-left: 4px solid var(--btn-purple); padding: 10px 15px; font-size: 13px; color: var(--text-gray); position: relative; align-items: center; justify-content: space-between; }
         #replyPreviewText { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 90%; }
         .cancel-reply-btn { cursor: pointer; color: var(--neon-pink); font-weight: bold; font-size: 16px; }
-        
-        /* กล่องข้อความที่ถูกอ้างอิง (Quoted) ในแชท */
-        .quoted-msg {
-            background: rgba(0,0,0,0.2); border-left: 3px solid var(--neon-green);
-            padding: 8px 10px; margin-bottom: 8px; border-radius: 4px;
-            font-size: 12px; color: var(--text-gray);
-        }
+        .quoted-msg { background: rgba(0,0,0,0.2); border-left: 3px solid var(--neon-green); padding: 8px 10px; margin-bottom: 8px; border-radius: 4px; font-size: 12px; color: var(--text-gray); }
+
+        .chat-input-box { display: flex; padding: 15px; background-color: var(--bg-card); border-top: 1px solid rgba(255,255,255,0.05); gap: 10px; }
+        .chat-input-box input { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background-color: var(--bg-main); color: var(--text-white); outline: none; }
+        .chat-input-box button { background-color: var(--neon-green); color: #12141a; border: none; padding: 0 20px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .chat-input-box button:hover { background-color: #3fbf23; }
 
         /* หน้าจอเติมเงิน */
         .credit-summary-box { background: rgba(0,0,0,0.3); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .btn-yellow-topup { background-color: var(--yellow-coin); color: #12141a; padding: 10px 24px; border-radius: 10px; font-weight: 600; font-size: 15px; border: none; cursor: pointer; transition: 0.2s; }
         .btn-yellow-topup:hover { transform: scale(1.05); }
-        
         .topup-box { background: rgba(0,0,0,0.3); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
         .topup-input-group { display: flex; gap: 15px; margin: 20px 0; }
         .topup-input-group input { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: var(--bg-main); color: var(--text-white); outline: none; font-size: 16px; }
@@ -179,6 +173,8 @@
             .auth-buttons { margin-top: 10px; }
             #dashboardView { grid-template-columns: 1fr; }
             .credit-summary-box { flex-direction: column; gap: 15px; text-align: center; }
+            .admin-user-list { width: 100%; height: 120px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .admin-chat-wrapper { flex-direction: column; height: 550px; }
         }
     </style>
 </head>
@@ -240,7 +236,7 @@
         <aside class="sidebar">
             <div class="profile-header">
                 <div class="avatar-upload-box" onclick="document.getElementById('avatarInput').click()" title="คลิกเพื่อเปลี่ยนรูปโปรไฟล์">
-                    <img src="channels4_profile (1)_2.jpg" class="avatar-img-large profile-pic-all">
+                    <img src="logo.jpg" class="avatar-img-large profile-pic-all">
                     <div class="avatar-overlay">📸<br>เปลี่ยนรูป</div>
                 </div>
                 <div style="font-size: 18px; font-weight: 600;" id="displayUsername">ผู้ใช้งานระบบ</div>
@@ -253,7 +249,7 @@
                 <li onclick="switchTab('orders', this)">📋 การสั่งซื้อของฉัน</li>
                 <li onclick="switchTab('inbox', this)">✉️ กล่องจดหมาย</li>
                 <li onclick="switchTab('credits', this)">🟡 Credits ของฉัน</li>
-                <li onclick="switchTab('chat', this)" style="color: var(--text-white); border-left: 3px solid var(--neon-pink);">💬 ติดต่อเรา (แชทแอดมิน)</li>
+                <li onclick="switchTab('chat', this)" style="color: var(--text-white); border-left: 3px solid var(--neon-pink);">💬 ติดต่อเรา (แชททีมงาน)</li>
                 <li onclick="logout()" class="logout-btn">🚪 ออกจากระบบ</li>
             </ul>
         </aside>
@@ -265,9 +261,7 @@
             <div id="tab-orders" class="content-tab"><div class="sub-nav"><span class="active">ทั้งหมด</span><span>รอชำระเงิน</span><span>สำเร็จ</span><span>ยกเลิก</span></div><div class="empty-state"><div style="font-size: 40px;">📄</div><p>ไม่พบประวัติการสั่งซื้อ</p></div></div>
             <div id="tab-inbox" class="content-tab"><div class="sub-nav"><span class="active">ทั้งหมด</span><span>ยังไม่ได้อ่าน</span></div><div class="empty-state"><div style="font-size: 40px;">📬</div><p>กล่องจดหมายว่างเปล่า</p></div></div>
             
-            <!-- หน้า Credits -->
             <div id="tab-credits" class="content-tab">
-                <!-- หน้าแรกของ Credits (กดปุ่มสีเหลืองเพื่อไปหน้าเติม) -->
                 <div id="creditMainPage">
                     <div class="credit-summary-box">
                         <div>
@@ -285,12 +279,11 @@
                     </div>
                 </div>
 
-                <!-- หน้าแบบฟอร์มเติมเงิน (ซ่อนไว้ก่อน จะแสดงเมื่อกดปุ่มสีเหลือง) -->
                 <div id="creditTopupPage" style="display: none;">
                     <div style="margin-bottom: 15px; cursor: pointer; color: var(--neon-green);" onclick="hideTopupForm()">⬅ กลับหน้ารายละเอียด Credits</div>
                     <div class="topup-box">
                         <div style="background: rgba(108, 92, 231, 0.2); border: 1px solid var(--btn-purple); padding: 10px; border-radius: 8px; font-size: 13px; margin-bottom: 15px;">
-                            ℹ️ ปิดการเติมเงินชั่วคราว ตั้งแต่เวลา 00:00 น. ถึงเวลา 02:00 น.
+                            ℹ️ ปิดการเติมเงินชั่วคราว ตั้งแต่เวลา 19:30 น. ถึงเวลา 5:00 น.
                         </div>
                         <h3 style="color: var(--text-white);">เติมเงิน Credits ผ่านการชำระเงินออนไลน์</h3>
                         <p style="color: var(--text-gray); font-size: 13px; margin-top: 5px;">คุณสามารถใช้ Credits ที่เติม ซื้อสินค้าหรือบริการต่างๆในเว็บไซต์ได้</p>
@@ -306,30 +299,38 @@
 
             <div id="tab-cookies" class="content-tab"><h2 style="margin-bottom: 15px;">🍪 แต้มคุกกี้สะสม</h2><div class="empty-state"><div style="font-size: 40px;">🍪</div><p>ยังไม่มีแต้มคุกกี้ (สะสมได้จากการซื้อสินค้า)</p></div></div>
             
+            <!-- หน้าต่างแชทใหม่แบบ Messenger -->
             <div id="tab-chat" class="content-tab">
                 <h2 style="margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
                     <span>💬 แชทสดติดต่อทีมงาน</span>
                     <span style="font-size: 12px; background: rgba(75,227,44,0.2); color: var(--neon-green); padding: 4px 10px; border-radius: 20px;" id="adminStatusTag">● ออนไลน์</span>
                 </h2>
-                <div class="chat-container">
-                    <div class="chat-header">
-                        <span id="adminChatTitle">🤖 แอดมิน Game Topup Shop (พร้อมช่วยเหลือตลอด 24 ชม.)</span>
-                        <div class="admin-only" style="gap: 5px;">
-                            <span style="font-size: 12px; background: var(--btn-purple); padding: 4px 8px; border-radius: 6px; cursor: pointer;" onclick="editAdminChatTitle()">✏️ แก้ไขชื่อแอดมิน</span>
-                            <span style="font-size: 12px; background: var(--neon-pink); padding: 4px 8px; border-radius: 6px; cursor: pointer;" onclick="toggleAdminStatus()">🔄 เปลี่ยนสถานะ</span>
-                        </div>
+                <div class="admin-chat-wrapper">
+                    <!-- รายชื่อผู้ติดต่อ (จะโชว์เฉพาะตอนเป็น Admin เท่านั้น) -->
+                    <div class="admin-user-list" id="adminUserList">
+                        <div style="padding: 10px; font-size: 12px; color: var(--text-gray); background: rgba(0,0,0,0.2); text-align: center;">👥 เลือกผู้ใช้เพื่อตอบ</div>
                     </div>
-                    <div class="chat-messages" id="chatBox"></div>
                     
-                    <!-- กล่องพรีวิวการตอบกลับตรงนี้ -->
-                    <div id="replyPreviewBox">
-                        <div id="replyPreviewText">กำลังตอบกลับ...</div>
-                        <span class="cancel-reply-btn" onclick="cancelReply()">×</span>
-                    </div>
+                    <!-- ส่วนหน้าต่างคุยหลัก -->
+                    <div class="chat-main-area">
+                        <div class="chat-header">
+                            <span id="adminChatTitle">🤖 แอดมิน Game Topup Shop (พร้อมช่วยเหลือตลอด 24 ชม.)</span>
+                            <div class="admin-only" style="gap: 5px;">
+                                <span style="font-size: 12px; background: var(--btn-purple); padding: 4px 8px; border-radius: 6px; cursor: pointer;" onclick="editAdminChatTitle()">✏️ แก้ไขชื่อ</span>
+                                <span style="font-size: 12px; background: var(--neon-pink); padding: 4px 8px; border-radius: 6px; cursor: pointer;" onclick="toggleAdminStatus()">🔄 สถานะ</span>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="chatBox"></div>
+                        
+                        <div id="replyPreviewBox">
+                            <div id="replyPreviewText">กำลังตอบกลับ...</div>
+                            <span class="cancel-reply-btn" onclick="cancelReply()">×</span>
+                        </div>
 
-                    <div class="chat-input-box">
-                        <input type="text" id="chatInput" placeholder="พิมพ์ข้อความที่นี่..." onkeypress="if(event.key==='Enter') sendMessage()">
-                        <button onclick="sendMessage()" id="sendChatBtn">ส่งข้อความ 🚀</button>
+                        <div class="chat-input-box">
+                            <input type="text" id="chatInput" placeholder="พิมพ์ข้อความที่นี่..." onkeypress="if(event.key==='Enter') sendMessage()">
+                            <button onclick="sendMessage()" id="sendChatBtn">ส่งข้อความ 🚀</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -365,37 +366,37 @@
         let currentAuthMode = 'login';
         let replyingToUserMsg = null;
 
-        // 🟢 ระบบฐานข้อมูลจำลอง (ดึงจาก LocalStorage ถ้ามี)
         let registeredUsers = JSON.parse(localStorage.getItem('shop_users')) || [];
         
+        // 1. กำหนดให้มีเกมตั้งต้นมาให้ทันที (ไม่เอาว่างเปล่า) สัดส่วน 1:1 จัตุรัสตามที่ต้องการ
         let defaultGames = [
             { id: 1, zone: 'topup', name: "Freefire", badge: "HOT", badgeClass: "badge-green", img: "", aspect: "1/1", category: "UID" },
             { id: 2, zone: 'topup', name: "ROV", badge: "POPULAR", badgeClass: "", img: "", aspect: "1/1", category: "ID-PASS" },
             { id: 3, zone: 'topup', name: "ONE PUNCH MAN", badge: "NEW", badgeClass: "badge-green", img: "", aspect: "1/1", category: "UID" },
             { id: 4, zone: 'topup', name: "Valorant", badge: "FPS", badgeClass: "", img: "", aspect: "1/1", category: "ID-PASS" },
-            { id: 5, zone: 'topup', name: "Genshin Impact", badge: "RPG", badgeClass: "badge-green", img: "", aspect: "1/1", category: "UID" },
-            { id: 6, zone: 'idpass', name: "ไอดี ROV สกินแรร์", badge: "VIP", badgeClass: "", img: "", aspect: "1/1", category: "ID-PASS" },
-            { id: 7, zone: 'idpass', name: "ไอดี Valorant แรงค์อิม", badge: "IMMORTAL", badgeClass: "badge-green", img: "", aspect: "1/1", category: "ID-PASS" },
-            { id: 8, zone: 'idpass', name: "ไอดี Blox Fruits ตัน", badge: "MAX", badgeClass: "", img: "", aspect: "1/1", category: "ID-PASS" },
-            { id: 9, zone: 'news', name: "โปรโมชั่นเติมเงินลด 10%", badge: "PROMO", badgeClass: "badge-green", img: "", aspect: "16/9", category: "" },
-            { id: 10, zone: 'news', name: "ประกาศอัปเดตระบบเว็บ", badge: "NEWS", badgeClass: "", img: "", aspect: "16/9", category: "" },
-            { id: 11, zone: 'news', name: "วิธีสมัครสมาชิกและเติมเงิน", badge: "GUIDE", badgeClass: "", img: "", aspect: "16/9", category: "" }
+            { id: 5, zone: 'idpass', name: "ไอดี ROV สกินแรร์", badge: "VIP", badgeClass: "", img: "", aspect: "1/1", category: "ID-PASS" },
+            { id: 6, zone: 'idpass', name: "ไอดี Valorant แรงค์อิม", badge: "IMMORTAL", badgeClass: "badge-green", img: "", aspect: "1/1", category: "ID-PASS" },
+            { id: 7, zone: 'idpass', name: "ไอดี Blox Fruits ตัน", badge: "MAX", badgeClass: "", img: "", aspect: "1/1", category: "ID-PASS" },
+            { id: 8, zone: 'news', name: "โปรโมชั่นเติมเงินลด 10%", badge: "PROMO", badgeClass: "badge-green", img: "", aspect: "1/1", category: "" }
         ];
 
-        let gamesList = JSON.parse(localStorage.getItem('shop_games')) || defaultGames;
-        let chatHistory = JSON.parse(localStorage.getItem('shop_chats')) || [
-            { sender: 'admin', text: "สวัสดีครับ! ต้องการสอบถามปัญหาการเติมเกม หรือเรื่องระบบเว็บ พิมพ์ถามทิ้งไว้ได้เลยครับ 🎮⚡" }
-        ];
+        let gamesList = JSON.parse(localStorage.getItem('shop_my_games_clean')) || defaultGames;
+
+        let allChats = JSON.parse(localStorage.getItem('shop_all_messages_v2')) || {
+            "ผู้ใช้ทั่วไป (Guest)": [
+                { sender: 'admin', text: "สวัสดีครับ! ต้องการสอบถามปัญหาการเติมเกม หรือเรื่องระบบเว็บ พิมพ์ถามทิ้งไว้ได้เลยครับ 🎮⚡" }
+            ]
+        };
+        let activeChatUser = "ผู้ใช้ทั่วไป (Guest)";
+
         let adminChatTitleText = localStorage.getItem('shop_admin_title') || "🤖 แอดมิน Game Topup Shop (พร้อมช่วยเหลือตลอด 24 ชม.)";
         let isAdminOnline = localStorage.getItem('shop_admin_status') !== 'offline';
 
-        function saveGamesToStorage() { localStorage.setItem('shop_games', JSON.stringify(gamesList)); }
-        function saveChatsToStorage() { localStorage.setItem('shop_chats', JSON.stringify(chatHistory)); }
+        function saveGamesToStorage() { localStorage.setItem('shop_my_games_clean', JSON.stringify(gamesList)); }
+        function saveAllChats() { localStorage.setItem('shop_all_messages_v2', JSON.stringify(allChats)); }
 
-        // 🟢 ตรวจสอบสถานะล็อกอินทันทีที่โหลดเว็บ (ไม่หลุดเมื่อ F5)
         window.onload = function() {
             renderAllGames();
-            renderChatHistory();
             document.getElementById('adminChatTitle').innerText = adminChatTitleText;
             updateAdminStatusUI();
 
@@ -403,6 +404,8 @@
             if (loggedInUser) {
                 let isAdm = (loggedInUser === 'ronxd256@gmail.com');
                 doLoginSuccess(loggedInUser, isAdm, false);
+            } else {
+                updateChatInterface();
             }
         };
 
@@ -435,22 +438,6 @@
             }
         }
 
-        function filterByBadge(badgeType) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            if(badgeType === 'ID-PASS') document.getElementById('filterIdpass').classList.add('active');
-            if(badgeType === 'UID') document.getElementById('filterUid').classList.add('active');
-
-            ['topup', 'idpass'].forEach(zone => {
-                const grid = document.getElementById(`grid-${zone}`);
-                if (!grid) return;
-                grid.innerHTML = '';
-                gamesList.filter(g => g.zone === zone && g.category === badgeType).forEach(g => {
-                    let imgContent = g.img ? `<img src="${g.img}">` : `<span>รูปเกม ${g.aspect}</span>`;
-                    grid.innerHTML += createGameCardHTML(g, imgContent);
-                });
-            });
-        }
-
         function handleSearch() {
             let query = document.getElementById('searchInput').value.trim().toLowerCase();
             if(!query) { renderAllGames(); return; }
@@ -459,7 +446,6 @@
                 const grid = document.getElementById(`grid-${zone}`);
                 if (!grid) return;
                 
-                // จัดเรียงตามความใกล้เคียงข้อความ
                 let sortedGames = gamesList.filter(g => g.zone === zone).map(g => {
                     let name = g.name.toLowerCase();
                     let matchScore = 0;
@@ -467,13 +453,12 @@
                     else if(name.startsWith(query)) matchScore = 80;
                     else if(name.includes(query)) matchScore = 60;
                     else {
-                        // คำนวณความใกล้เคียงอย่างง่าย
                         let matchCount = 0;
                         for(let char of query) { if(name.includes(char)) matchCount++; }
                         matchScore = (matchCount / Math.max(name.length, query.length)) * 100;
                     }
                     return { game: g, score: matchScore };
-                }).filter(item => item.score >= 40) // กรองเฉพาะที่ใกล้เคียงเกิน 40%
+                }).filter(item => item.score >= 40)
                 .sort((a, b) => b.score - a.score);
 
                 grid.innerHTML = '';
@@ -493,7 +478,7 @@
                         <span onclick="event.stopPropagation(); editGameInfo(${g.id})" title="เปลี่ยนชื่อ/ป้าย">✏️</span>
                         <span onclick="event.stopPropagation(); deleteGame(${g.id})" title="ลบสินค้านี้">🗑️</span>
                     </div>
-                    <div class="game-img-placeholder" style="aspect-ratio: ${g.aspect};">${imgContent}<div class="publisher-badge ${g.badgeClass}">${g.badge}</div></div>
+                    <div class="game-img-placeholder" style="aspect-ratio: 1 / 1;">${imgContent}<div class="publisher-badge ${g.badgeClass}">${g.badge}</div></div>
                     <div class="game-title">${g.name}</div>
                 </div>
             `;
@@ -508,10 +493,10 @@
                     let imgContent = g.img ? `<img src="${g.img}">` : `<span>รูปเกม ${g.aspect}</span>`;
                     grid.innerHTML += createGameCardHTML(g, imgContent);
                 });
-                let aspect = zone === 'news' ? '16/9' : '1/1';
+                // ให้การ์ดปุ่มเพิ่มเกมเป็น 1/1 เสมอทุกหมวดหมู่
                 grid.innerHTML += `
                     <div class="game-card add-game-card admin-only" onclick="addNewGame('${zone}')">
-                        <div class="game-img-placeholder" style="aspect-ratio: ${aspect};"><span style="font-size: 35px; color: var(--neon-pink); font-weight: bold;">+</span></div>
+                        <div class="game-img-placeholder" style="aspect-ratio: 1 / 1;"><span style="font-size: 35px; color: var(--neon-pink); font-weight: bold;">+</span></div>
                         <div class="game-title" style="color: var(--neon-pink); font-weight: 600;">+ เพิ่มเกมใหม่</div>
                     </div>
                 `;
@@ -563,18 +548,77 @@
             let badge = prompt("🏷️ กรุณากรอกป้ายกำกับ (เช่น HOT, NEW, SALE):", "NEW");
             let cat = prompt("📂 กรุณากรอกหมวดหมู่ (ID-PASS หรือ UID):", "UID");
             let newId = gamesList.length > 0 ? Math.max(...gamesList.map(g => g.id)) + 1 : 1;
-            let aspect = zone === 'news' ? '16/9' : '1/1';
             let badgeClass = (badge === "HOT" || badge === "NEW" || badge === "SALE") ? "badge-green" : "";
-            gamesList.push({ id: newId, zone: zone, name: name.trim(), badge: (badge || "NEW").toUpperCase(), badgeClass: badgeClass, img: "", aspect: aspect, category: (cat || "UID").toUpperCase() });
+            
+            // ตั้งค่า aspect เป็น "1/1" เพื่อให้การ์ดเกมใหม่ทุกใบเป็น 1 ต่อ 1 เสมอ
+            gamesList.push({ id: newId, zone: zone, name: name.trim(), badge: (badge || "NEW").toUpperCase(), badgeClass: badgeClass, img: "", aspect: "1/1", category: (cat || "UID").toUpperCase() });
             renderAllGames();
             if(confirm(`🎉 เพิ่มสินค้า "${name}" สำเร็จ!\nต้องการอัปโหลดรูปภาพให้กับสินค้านี้เลยไหมครับ?`)) triggerImageUpload(newId);
         }
 
-        // --- ระบบแชทอัปเกรด (จำแชท + ตอบกลับเฉพาะข้อความ) ---
+        // --- ระบบแชทอัปเกรด (ดึงรูปตามจริง) ---
+        function updateChatInterface() {
+            let loggedIn = localStorage.getItem('shop_logged_in_user');
+            if (isAdmin) {
+                renderAdminUserList();
+                let users = Object.keys(allChats);
+                if (!users.includes(activeChatUser) && users.length > 0) activeChatUser = users[0];
+            } else {
+                activeChatUser = loggedIn || "ผู้ใช้ทั่วไป (Guest)";
+                if (!allChats[activeChatUser]) {
+                    allChats[activeChatUser] = [
+                        { sender: 'admin', text: `สวัสดีครับคุณ ${activeChatUser}! มีปัญหาการใช้งานหรือต้องการสอบถามอะไร พิมพ์ไว้ได้เลยครับ 🎮⚡` }
+                    ];
+                    saveAllChats();
+                }
+            }
+            renderChatHistory();
+        }
+
+        function getUserProfileImage(username) {
+            if (username === "ผู้ใช้ทั่วไป (Guest)") return "logo.jpg";
+            let userObj = registeredUsers.find(u => u.username === username);
+            return (userObj && userObj.avatar) ? userObj.avatar : "logo.jpg";
+        }
+
+        function renderAdminUserList() {
+            const listEl = document.getElementById('adminUserList');
+            if (!listEl) return;
+            let html = `<div style="padding: 10px; font-size: 12px; color: var(--text-gray); background: rgba(0,0,0,0.2); text-align: center;">👥 เลือกผู้ใช้เพื่อตอบ</div>`;
+            
+            let users = Object.keys(allChats);
+            users.forEach(u => {
+                let activeClass = (u === activeChatUser) ? 'active' : '';
+                let lastMsgObj = allChats[u][allChats[u].length - 1] || { text: 'ไม่มีข้อความ' };
+                let lastMsgText = lastMsgObj.text.replace(/<[^>]*>?/gm, ''); 
+                let userImg = getUserProfileImage(u);
+
+                html += `
+                    <div class="admin-user-item ${activeClass}" onclick="selectUserForAdmin('${u}')">
+                        <img src="${userImg}">
+                        <div class="admin-user-info">
+                            <div class="admin-user-name">${u}</div>
+                            <div class="admin-user-sub">${lastMsgText}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            listEl.innerHTML = html;
+        }
+
+        function selectUserForAdmin(username) {
+            activeChatUser = username;
+            renderAdminUserList();
+            renderChatHistory();
+        }
+
         function renderChatHistory() {
             const box = document.getElementById('chatBox');
+            if(!box) return;
             box.innerHTML = '';
-            chatHistory.forEach((msg, idx) => {
+            
+            let msgs = allChats[activeChatUser] || [];
+            msgs.forEach((msg) => {
                 if(msg.sender === 'admin') {
                     box.innerHTML += `<div class="msg-bubble msg-admin">${msg.text}</div>`;
                 } else {
@@ -582,10 +626,15 @@
                 }
             });
             box.scrollTop = box.scrollHeight;
+            if(isAdmin) {
+                document.getElementById('adminChatTitle').innerText = `💬 กำลังสนทนากับ: ${activeChatUser}`;
+            } else {
+                document.getElementById('adminChatTitle').innerText = adminChatTitleText;
+            }
         }
 
         function selectUserMsgToReply(userText) {
-            if(!isAdmin) return; // ถ้าไม่ใช่แอดมิน กดไม่ได้
+            if(!isAdmin) return;
             replyingToUserMsg = userText;
             document.getElementById('replyPreviewText').innerHTML = `<strong>กำลังตอบกลับ:</strong> "${userText}"`;
             document.getElementById('replyPreviewBox').style.display = 'flex';
@@ -602,29 +651,30 @@
             const msg = input.value.trim();
             if(!msg) return;
 
+            if(!allChats[activeChatUser]) allChats[activeChatUser] = [];
+
             if(isAdmin) {
-                // ถ้ามีการอ้างอิงข้อความตอบกลับ
                 let replyHtml = "";
                 if (replyingToUserMsg) {
-                    replyHtml = `<div class="quoted-msg"><strong>ตอบกลับข้อความ:</strong><br>${replyingToUserMsg}</div>`;
+                    replyHtml = `<div class="quoted-msg"><strong>ตอบกลับ:</strong><br>${replyingToUserMsg}</div>`;
                 }
-                chatHistory.push({ sender: 'admin', text: replyHtml + msg });
-                cancelReply(); // ปิดกล่องพรีวิว
+                allChats[activeChatUser].push({ sender: 'admin', text: replyHtml + msg });
+                cancelReply();
             } else {
-                // ผู้ใช้ทั่วไปพิมพ์
-                chatHistory.push({ sender: 'user', text: msg });
+                allChats[activeChatUser].push({ sender: 'user', text: msg });
                 setTimeout(() => {
                     let reply = "แอดมินรับทราบข้อความครับ กำลังเร่งตรวจสอบข้อมูลในระบบให้นะครับ 🙏⚡";
                     if(msg.includes("ราคา") || msg.includes("เติม") || msg.includes("ลด")) reply = "สามารถคลิกที่เมนู 'Credits ของฉัน' ด้านซ้ายมือเพื่อทำการเติมเงินได้เลยครับ เงินเข้าอัตโนมัติครับ! 🟡✨";
-                    chatHistory.push({ sender: 'admin', text: reply });
-                    saveChatsToStorage();
+                    allChats[activeChatUser].push({ sender: 'admin', text: reply });
+                    saveAllChats();
                     renderChatHistory();
                 }, 1000);
             }
             
             input.value = '';
-            saveChatsToStorage();
+            saveAllChats();
             renderChatHistory();
+            if(isAdmin) renderAdminUserList();
         }
 
         function editAdminChatTitle() {
@@ -655,7 +705,7 @@
             }
         }
 
-        // --- ระบบเติมเงิน Credits (สลับหน้าภายในแท็บ) ---
+        // --- ระบบเติมเงิน Credits ---
         function showTopupForm() {
             document.getElementById('creditMainPage').style.display = 'none';
             document.getElementById('creditTopupPage').style.display = 'block';
@@ -679,7 +729,7 @@
             alert(`🎉 ชำระเงินสำเร็จ!\nเพิ่มยอดเงิน ${thb} Credits เข้าสู่บัญชีของคุณเรียบร้อยแล้วครับ!`);
         }
 
-        // --- ระบบล็อกอิน / สมัครสมาชิก (จำข้อมูลลง LocalStorage) ---
+        // --- ระบบล็อกอิน / สมัครสมาชิก ---
         function openModal(type) {
             currentAuthMode = type;
             document.getElementById('authModal').style.display = 'flex';
@@ -725,30 +775,27 @@
             }
         }
 
-        // 💾 ฟังก์ชันอัปเดตรูปโปรไฟล์ (บันทึกลง LocalStorage)
         function changeAvatar(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const base64Image = e.target.result;
-                    
-                    // เปลี่ยนรูปในหน้าเว็บทันที
                     document.querySelectorAll('.profile-pic-all').forEach(img => img.src = base64Image);
                     
-                    // ระบบบันทึกรูปโปรไฟล์ (ไม่หายเมื่อกด F5)
                     let loggedInUser = localStorage.getItem('shop_logged_in_user');
                     if (loggedInUser) {
                         if (loggedInUser === 'ronxd256@gmail.com') {
-                            localStorage.setItem('shop_admin_avatar', base64Image); // บันทึกของ Admin
+                            localStorage.setItem('shop_admin_avatar', base64Image);
                         } else {
                             let foundUser = registeredUsers.find(u => u.username === loggedInUser);
                             if (foundUser) {
-                                foundUser.avatar = base64Image; // บันทึกของ User
+                                foundUser.avatar = base64Image;
                                 localStorage.setItem('shop_users', JSON.stringify(registeredUsers));
                             }
                         }
                     }
+                    updateChatInterface();
                     alert("🎉 อัปเดตเปลี่ยนรูปโปรไฟล์เรียบร้อยแล้วครับ!");
                 }
                 reader.readAsDataURL(file);
@@ -759,10 +806,9 @@
             closeModal();
             document.getElementById('guestZone').style.display = 'none';
             document.getElementById('userZone').style.display = 'flex';
-            localStorage.setItem('shop_logged_in_user', username); // จำการล็อกอินไม่ให้หลุดตอน F5
+            localStorage.setItem('shop_logged_in_user', username);
 
-            // 💾 โหลดรูปโปรไฟล์ตอนเข้าสู่ระบบ
-            let userAvatar = "channels4_profile (1)_2.jpg"; // รูปเริ่มต้นถ้ายังไม่เคยเปลี่ยน
+            let userAvatar = "logo.jpg"; 
             if (isUserAdmin) {
                 userAvatar = localStorage.getItem('shop_admin_avatar') || userAvatar;
                 isAdmin = true;
@@ -779,19 +825,20 @@
                 if(showMsg) alert('🎉 ยินดีต้อนรับคุณ ' + username + ' เข้าสู่ระบบ!');
             }
             
-            // อัปเดตแสดงผลรูปภาพโปรไฟล์ใหม่ทันที
             document.querySelectorAll('.profile-pic-all').forEach(img => img.src = userAvatar);
-            showDashboard('account');
+            showShopView();
+            updateChatInterface();
         }
 
         function logout() {
             if(confirm("ต้องการออกจากระบบใช่หรือไม่?")) {
                 isAdmin = false;
-                localStorage.removeItem('shop_logged_in_user'); // ลบความจำล็อกอิน
+                localStorage.removeItem('shop_logged_in_user');
                 document.body.classList.remove('admin-mode');
                 showShopView();
                 document.getElementById('userZone').style.display = 'none';
                 document.getElementById('guestZone').style.display = 'flex';
+                updateChatInterface();
             }
         }
 
@@ -805,7 +852,7 @@
         function switchTab(tabId, el) {
             document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active')); if(el) el.classList.add('active');
             document.querySelectorAll('.content-tab').forEach(tab => tab.classList.remove('active')); let t = document.getElementById('tab-' + tabId); if(t) t.classList.add('active');
-            if(tabId === 'credits') hideTopupForm(); // รีเซ็ตหน้า Credits ให้อยู่หน้ารวมเสมอ
+            if(tabId === 'credits') hideTopupForm();
         }
 
         window.onclick = function(e) { if(e.target == document.getElementById('authModal')) closeModal(); }

@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game Topup Shop - Pro Gamer Theme</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- 🟢 เชื่อมต่อระบบ Google Firebase Cloud -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --bg-main: #12141a;        /* ดำชาโคลเข้ม */
@@ -360,6 +365,22 @@
 
     <!-- 5. JAVASCRIPT -->
     <script>
+        // 🚀 ตั้งค่าการเชื่อมต่อ Google Firebase จากโปรเจกต์ของคุณ (อัปเดตเซิร์ฟเวอร์สิงคโปร์ถูกต้องแล้ว!)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAidoNAUSWFVGrm4er_ef-P-qHt9W-Lhks",
+            authDomain: "ronxd-f83c4.firebaseapp.com",
+            databaseURL: "https://ronxd-f83c4-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "ronxd-f83c4",
+            storageBucket: "ronxd-f83c4.firebasestorage.app",
+            messagingSenderId: "735967264082",
+            appId: "1:735967264082:web:87dc532843f5997bed4e8b",
+            measurementId: "G-WEKV1SY9BM"
+        };
+        
+        // เริ่มต้นการทำงานของ Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         let myCredits = 0.00;
         let isAdmin = false;
         let currentEditingGameId = null;
@@ -368,7 +389,6 @@
 
         let registeredUsers = JSON.parse(localStorage.getItem('shop_users')) || [];
         
-        // 1. กำหนดให้มีเกมตั้งต้นมาให้ทันที (ไม่เอาว่างเปล่า) สัดส่วน 1:1 จัตุรัสตามที่ต้องการ
         let defaultGames = [
             { id: 1, zone: 'topup', name: "Freefire", badge: "HOT", badgeClass: "badge-green", img: "", aspect: "1/1", category: "UID" },
             { id: 2, zone: 'topup', name: "ROV", badge: "POPULAR", badgeClass: "", img: "", aspect: "1/1", category: "ID-PASS" },
@@ -392,13 +412,54 @@
         let adminChatTitleText = localStorage.getItem('shop_admin_title') || "🤖 แอดมิน Game Topup Shop (พร้อมช่วยเหลือตลอด 24 ชม.)";
         let isAdminOnline = localStorage.getItem('shop_admin_status') !== 'offline';
 
-        function saveGamesToStorage() { localStorage.setItem('shop_my_games_clean', JSON.stringify(gamesList)); }
-        function saveAllChats() { localStorage.setItem('shop_all_messages_v2', JSON.stringify(allChats)); }
+        // 💾 ฟังก์ชันบันทึกขึ้นคลาวด์ Firebase
+        function saveGamesToStorage() { 
+            localStorage.setItem('shop_my_games_clean', JSON.stringify(gamesList)); 
+            db.ref('shop_games').set(gamesList);
+        }
+        function saveAllChats() { 
+            localStorage.setItem('shop_all_messages_v2', JSON.stringify(allChats)); 
+            db.ref('shop_chats').set(allChats);
+        }
+        function saveUsersToStorage() {
+            localStorage.setItem('shop_users', JSON.stringify(registeredUsers));
+            db.ref('shop_users').set(registeredUsers);
+        }
 
         window.onload = function() {
-            renderAllGames();
-            document.getElementById('adminChatTitle').innerText = adminChatTitleText;
-            updateAdminStatusUI();
+            // 🔄 ดึงข้อมูลจากคลาวด์แบบ Real-time (ซิงค์เหมือนกันทุกเครื่อง)
+            db.ref('shop_games').on('value', (snapshot) => {
+                const cloudGames = snapshot.val();
+                if (cloudGames) gamesList = cloudGames;
+                else db.ref('shop_games').set(defaultGames);
+                renderAllGames();
+            });
+
+            db.ref('shop_users').on('value', (snapshot) => {
+                const cloudUsers = snapshot.val();
+                if (cloudUsers) registeredUsers = cloudUsers;
+                updateCurrentUserUI();
+            });
+
+            db.ref('shop_chats').on('value', (snapshot) => {
+                const cloudChats = snapshot.val();
+                if (cloudChats) allChats = cloudChats;
+                else db.ref('shop_chats').set(allChats);
+                if (isAdmin) renderAdminUserList();
+                renderChatHistory();
+            });
+
+            db.ref('adminSettings').on('value', (snapshot) => {
+                const adminData = snapshot.val() || {};
+                if (adminData.title) adminChatTitleText = adminData.title;
+                if (adminData.online !== undefined) isAdminOnline = adminData.online;
+                if (adminData.avatar) localStorage.setItem('shop_admin_avatar', adminData.avatar);
+                if (adminData.credits !== undefined && isAdmin) myCredits = adminData.credits;
+                
+                document.getElementById('adminChatTitle').innerText = adminChatTitleText;
+                updateAdminStatusUI();
+                updateCurrentUserUI();
+            });
 
             let loggedInUser = localStorage.getItem('shop_logged_in_user');
             if (loggedInUser) {
@@ -493,7 +554,6 @@
                     let imgContent = g.img ? `<img src="${g.img}">` : `<span>รูปเกม ${g.aspect}</span>`;
                     grid.innerHTML += createGameCardHTML(g, imgContent);
                 });
-                // ให้การ์ดปุ่มเพิ่มเกมเป็น 1/1 เสมอทุกหมวดหมู่
                 grid.innerHTML += `
                     <div class="game-card add-game-card admin-only" onclick="addNewGame('${zone}')">
                         <div class="game-img-placeholder" style="aspect-ratio: 1 / 1;"><span style="font-size: 35px; color: var(--neon-pink); font-weight: bold;">+</span></div>
@@ -550,13 +610,12 @@
             let newId = gamesList.length > 0 ? Math.max(...gamesList.map(g => g.id)) + 1 : 1;
             let badgeClass = (badge === "HOT" || badge === "NEW" || badge === "SALE") ? "badge-green" : "";
             
-            // ตั้งค่า aspect เป็น "1/1" เพื่อให้การ์ดเกมใหม่ทุกใบเป็น 1 ต่อ 1 เสมอ
             gamesList.push({ id: newId, zone: zone, name: name.trim(), badge: (badge || "NEW").toUpperCase(), badgeClass: badgeClass, img: "", aspect: "1/1", category: (cat || "UID").toUpperCase() });
             renderAllGames();
             if(confirm(`🎉 เพิ่มสินค้า "${name}" สำเร็จ!\nต้องการอัปโหลดรูปภาพให้กับสินค้านี้เลยไหมครับ?`)) triggerImageUpload(newId);
         }
 
-        // --- ระบบแชทอัปเกรด (ดึงรูปตามจริง) ---
+        // --- ระบบแชทอัปเกรด (ดึงรูปตามจริงและอัปเดตออนไลน์) ---
         function updateChatInterface() {
             let loggedIn = localStorage.getItem('shop_logged_in_user');
             if (isAdmin) {
@@ -682,6 +741,7 @@
             if(newTitle && newTitle.trim()) {
                 adminChatTitleText = newTitle.trim();
                 localStorage.setItem('shop_admin_title', adminChatTitleText);
+                db.ref('adminSettings/title').set(adminChatTitleText);
                 document.getElementById('adminChatTitle').innerText = adminChatTitleText;
             }
         }
@@ -689,6 +749,7 @@
         function toggleAdminStatus() {
             isAdminOnline = !isAdminOnline;
             localStorage.setItem('shop_admin_status', isAdminOnline ? 'online' : 'offline');
+            db.ref('adminSettings/online').set(isAdminOnline);
             updateAdminStatusUI();
         }
 
@@ -705,7 +766,7 @@
             }
         }
 
-        // --- ระบบเติมเงิน Credits ---
+        // --- ระบบเติมเงิน Credits ซิงค์คลาวด์ ---
         function showTopupForm() {
             document.getElementById('creditMainPage').style.display = 'none';
             document.getElementById('creditTopupPage').style.display = 'block';
@@ -722,11 +783,46 @@
             let thb = parseFloat(document.getElementById('topupInput').value) || 0;
             if(thb <= 0) return alert("กรุณาระบุจำนวนเงินครับ");
             myCredits += thb;
+            
+            let loggedInUser = localStorage.getItem('shop_logged_in_user');
+            if (loggedInUser && loggedInUser !== 'ronxd256@gmail.com') {
+                let foundUser = registeredUsers.find(u => u.username === loggedInUser);
+                if (foundUser) {
+                    foundUser.credits = (foundUser.credits || 0) + thb;
+                    myCredits = foundUser.credits;
+                    saveUsersToStorage();
+                }
+            } else if (loggedInUser === 'ronxd256@gmail.com') {
+                db.ref('adminSettings/credits').set(myCredits);
+            }
+            
             document.getElementById('navCreditDisplay').innerText = myCredits.toFixed(2);
             document.getElementById('sidebarCredit').innerText = myCredits.toFixed(2);
             document.getElementById('mainCreditDisplay').innerText = myCredits.toFixed(2);
             hideTopupForm();
             alert(`🎉 ชำระเงินสำเร็จ!\nเพิ่มยอดเงิน ${thb} Credits เข้าสู่บัญชีของคุณเรียบร้อยแล้วครับ!`);
+        }
+
+        function updateCurrentUserUI() {
+            let loggedInUser = localStorage.getItem('shop_logged_in_user');
+            if (!loggedInUser) return;
+            
+            let userAvatar = "logo.jpg";
+            if (loggedInUser === 'ronxd256@gmail.com') {
+                userAvatar = localStorage.getItem('shop_admin_avatar') || "logo.jpg";
+            } else {
+                let foundUser = registeredUsers.find(u => u.username === loggedInUser);
+                if (foundUser) {
+                    if (foundUser.avatar) userAvatar = foundUser.avatar;
+                    if (foundUser.credits !== undefined) {
+                        myCredits = foundUser.credits;
+                        document.getElementById('navCreditDisplay').innerText = myCredits.toFixed(2);
+                        document.getElementById('sidebarCredit').innerText = myCredits.toFixed(2);
+                        document.getElementById('mainCreditDisplay').innerText = myCredits.toFixed(2);
+                    }
+                }
+            }
+            document.querySelectorAll('.profile-pic-all').forEach(img => img.src = userAvatar);
         }
 
         // --- ระบบล็อกอิน / สมัครสมาชิก ---
@@ -754,8 +850,8 @@
                 if (registeredUsers.some(u => u.username === user) || user === 'ronxd256@gmail.com') {
                     return alert('❌ บัญชีผู้ใช้งานนี้มีอยู่ในระบบแล้วครับ! สามารถเข้าสู่ระบบได้เลย');
                 }
-                registeredUsers.push({ username: user, password: pass });
-                localStorage.setItem('shop_users', JSON.stringify(registeredUsers));
+                registeredUsers.push({ username: user, password: pass, credits: 0 });
+                saveUsersToStorage();
                 alert('🎉 สมัครสมาชิกสำเร็จเรียบร้อย!\nระบบกำลังพาคุณเข้าสู่ระบบด้วยบัญชี: ' + user);
                 doLoginSuccess(user, false, true);
                 return;
@@ -787,11 +883,12 @@
                     if (loggedInUser) {
                         if (loggedInUser === 'ronxd256@gmail.com') {
                             localStorage.setItem('shop_admin_avatar', base64Image);
+                            db.ref('adminSettings/avatar').set(base64Image);
                         } else {
                             let foundUser = registeredUsers.find(u => u.username === loggedInUser);
                             if (foundUser) {
                                 foundUser.avatar = base64Image;
-                                localStorage.setItem('shop_users', JSON.stringify(registeredUsers));
+                                saveUsersToStorage();
                             }
                         }
                     }
@@ -817,8 +914,15 @@
                 if(showMsg) alert('🚨 ยินดีต้อนรับ ADMIN !\nเปิดใช้งานโหมดผู้ดูแลระบบเรียบร้อยครับ');
             } else {
                 let foundUser = registeredUsers.find(u => u.username === username);
-                if (foundUser && foundUser.avatar) userAvatar = foundUser.avatar;
-                
+                if (foundUser) {
+                    if (foundUser.avatar) userAvatar = foundUser.avatar;
+                    if (foundUser.credits !== undefined) {
+                        myCredits = foundUser.credits;
+                        document.getElementById('navCreditDisplay').innerText = myCredits.toFixed(2);
+                        document.getElementById('sidebarCredit').innerText = myCredits.toFixed(2);
+                        document.getElementById('mainCreditDisplay').innerText = myCredits.toFixed(2);
+                    }
+                }
                 isAdmin = false;
                 document.body.classList.remove('admin-mode');
                 document.getElementById('displayUsername').innerText = username;

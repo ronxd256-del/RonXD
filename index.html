@@ -421,29 +421,38 @@
         let adminChatTitleText = "🤖 แอดมิน Game Topup Shop (พร้อมช่วยเหลือตลอด 24 ชม.)";
         let isAdminOnline = true;
 
-        // 💾 ฟังก์ชันบันทึกขึ้นคลาวด์ Firebase แบบถาวร
-        function saveGamesToStorage() { db.ref('shop_games').set(gamesList); }
+        // 💾 ฟังก์ชันบันทึกขึ้นคลาวด์แบบล็อกสถานะถาวร (ไม่มีวันเด้งกลับ!)
+        function saveGamesToStorage() { 
+            db.ref('shop_games_v2').set({
+                initialized: true,
+                list: gamesList
+            }); 
+        }
         function saveAllChats() { db.ref('shop_chats').set(allChats); }
         function saveUsersToStorage() { db.ref('shop_users').set(registeredUsers); }
 
         window.onload = function() {
-            // 🔄 โหลดระบบออนไลน์: ถ้ามีการแก้ไข/ลบ จะจำค่านั้นไปตลอดกาล
-            db.ref('shop_games').on('value', (snapshot) => {
-                const cloudGames = snapshot.val();
-                if (cloudGames && Array.isArray(cloudGames)) {
-                    gamesList = cloudGames;
-                } else if (!snapshot.exists()) {
+            // 🔄 โหลดข้อมูลสินค้า: ล็อกสถานะห้ามเอา defaultGames กลับมาทับเด็ดขาด
+            db.ref('shop_games_v2').on('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    // ถ้ายังไม่เคยเปิดเว็บเลย ให้ลง defaultGames ครั้งแรกครั้งเดียว
                     gamesList = defaultGames;
-                    db.ref('shop_games').set(defaultGames);
+                    db.ref('shop_games_v2').set({ initialized: true, list: defaultGames });
                 } else {
-                    gamesList = [];
+                    // ถ้าเคยเปิดแล้ว (แม้ว่าแอดมินจะลบจนเกลี้ยง) ให้จำค่านั้นตลอดไป
+                    const data = snapshot.val();
+                    if (data && data.list) {
+                        gamesList = Array.isArray(data.list) ? data.list : Object.values(data.list);
+                    } else {
+                        gamesList = [];
+                    }
                 }
                 renderAllGames();
             });
 
             db.ref('shop_users').on('value', (snapshot) => {
                 const cloudUsers = snapshot.val();
-                if (cloudUsers) registeredUsers = cloudUsers;
+                if (cloudUsers) registeredUsers = Array.isArray(cloudUsers) ? cloudUsers : Object.values(cloudUsers);
                 updateCurrentUserUI();
             });
 
@@ -646,8 +655,9 @@
         }
         function deleteGame(id) {
             let game = gamesList.find(g => g.id === id);
+            if (!game) return;
             if (confirm(`⚠️ คำเตือนระบบ ADMIN\nคุณต้องการลบสินค้า "${game.name}" ออกจากหน้าร้านถาวรใช่หรือไม่?`)) {
-                gamesList = gamesList.filter(g => g.id !== id); 
+                gamesList = gamesList.filter(g => g && g.id !== id); 
                 saveGamesToStorage();
             }
         }

@@ -141,12 +141,11 @@
             height: 110px !important; 
         }
 
-        /* มือผู้เล่น: ขนาดการ์ดใหญ่กว่าสนาม (105px x 152px) */
+        /* มือผู้เล่น: การ์ดใหญ่ชัดเจน (105px x 152px) */
         .hand-zone { position: absolute; display: flex; align-items: flex-end; justify-content: center; height: 160px; width: 70%; z-index: 50; bottom: 0; left: 50%; transform: translateX(-50%); transition: background 0.2s; }
         .hand-zone.drag-over { background: rgba(40, 167, 69, 0.25); border-radius: 12px 12px 0 0; }
         .hand-zone.opponent { top: 40px; bottom: auto; pointer-events: none; }
         
-        /* การ์ดในมือผู้เล่นจะใหญ่ ชัดเจน */
         .hand-zone:not(.opponent) > .card { 
             position: relative !important; 
             left: auto !important; 
@@ -162,7 +161,6 @@
             margin: 0 14px; 
         }
 
-        /* การ์ดในมือคู่ต่อสู้: ขนาดเล็กธรรมดา */
         .hand-zone.opponent > .card {
             position: relative !important;
             left: auto !important;
@@ -347,22 +345,30 @@
         window.onload = () => {
             const savedRoom = localStorage.getItem('tlc_saved_room');
             if (savedRoom) document.getElementById('room-id').value = savedRoom;
-            loadDeckFromStorage();
         };
 
-        function saveDeckToStorage() {
-            localStorage.setItem('tlc_saved_deck', JSON.stringify({ main: arrMainDeck, life: arrLifeDeck }));
+        // เซฟ & โหลดเด็คแยกตามฝั่ง A และ B
+        function saveDeckToStorage(side) {
+            const key = `tlc_saved_deck_${side}`;
+            localStorage.setItem(key, JSON.stringify({ main: arrMainDeck, life: arrLifeDeck }));
         }
 
-        function loadDeckFromStorage() {
+        function loadDeckFromStorage(side) {
             try {
-                const data = localStorage.getItem('tlc_saved_deck');
+                const key = `tlc_saved_deck_${side}`;
+                const data = localStorage.getItem(key);
                 if (data) {
                     const parsed = JSON.parse(data);
                     arrMainDeck = Array.isArray(parsed.main) ? parsed.main : [];
                     arrLifeDeck = Array.isArray(parsed.life) ? parsed.life : [];
+                } else {
+                    arrMainDeck = [];
+                    arrLifeDeck = [];
                 }
-            } catch(e){}
+            } catch(e) {
+                arrMainDeck = [];
+                arrLifeDeck = [];
+            }
         }
 
         function switchScreen(hideId, showId) {
@@ -425,6 +431,9 @@
             document.getElementById('nav-room').innerText = currentRoomId;
             document.getElementById('nav-side').innerText = 'ฝ่าย ' + side;
             document.getElementById('nav-side').style.color = side === 'A' ? '#007bff' : '#dc3545';
+
+            // โหลดเด็คเฉพาะของฝั่งที่เลือก (A หรือ B)
+            loadDeckFromStorage(mySide);
 
             switchScreen('screen-side', 'screen-builder');
             
@@ -517,22 +526,22 @@
                 if (arrLifeDeck.length >= 5) return alert('Life Deck สูงสุด 5 ใบ');
                 arrLifeDeck.push(cardNum);
             }
-            saveDeckToStorage();
+            saveDeckToStorage(mySide);
             renderBuilderDecks();
         }
 
         function removeFromDeck(idx, type) {
             if (type === 'main') arrMainDeck.splice(idx, 1);
             else arrLifeDeck.splice(idx, 1);
-            saveDeckToStorage();
+            saveDeckToStorage(mySide);
             renderBuilderDecks();
         }
 
         function clearDeck() {
-            if (confirm('คุณต้องการล้างเด็คทั้งหมดใช่หรือไม่?')) {
+            if (confirm(`คุณต้องการล้างเด็คของฝ่าย ${mySide} ใช่หรือไม่?`)) {
                 arrMainDeck = [];
                 arrLifeDeck = [];
-                saveDeckToStorage();
+                saveDeckToStorage(mySide);
                 renderBuilderDecks();
             }
         }
@@ -547,7 +556,7 @@
                 const rand = validCards[Math.floor(Math.random() * validCards.length)];
                 arrLifeDeck.push(rand);
             }
-            saveDeckToStorage();
+            saveDeckToStorage(mySide);
             renderBuilderDecks();
         }
 
@@ -706,14 +715,13 @@
             sendNetwork('DICE_ROLL', { val: res });
         }
 
-        // --- 5. ระบบคำนวณตำแหน่ง & ขอบเขตสนาม (Field Boundaries) ---
+        // --- 5. ระบบคำนวณตำแหน่ง & ขอบเขตสนามแบบเป๊ะตามรูป 37, 38, 39 ---
         function startDragFromHand(e, cardObj, handIdx) {
             e.preventDefault();
             inGameHand.splice(handIdx, 1);
             renderHand();
 
             const playArea = document.getElementById('play-area');
-            // สร้างการ์ดบนบอร์ดขนาด 76x110 ทันที
             const cardEl = createBoardCard(cardObj.id, cardObj.num, e.clientX - 38, e.clientY - 55, false);
             playArea.appendChild(cardEl);
 
@@ -828,25 +836,26 @@
                 return;
             }
 
-            // 5. คำนวณพิกัดบนสนาม (ล็อคเขตแดน & ดูดเข้าเมืองตรงกลาง)
+            // 5. คำนวณพิกัดบนสนาม (ล็อคกรอบล่างเป๊ะ & โซนเมืองตรงกลาง)
             const cardW = 76;
             const cardH = 110;
             let centerXPercent = ((e.clientX) / window.innerWidth) * 100;
             let centerYPercent = ((e.clientY) / window.innerHeight) * 100;
 
-            // ตรวจสอบโซนเมืองตรงกลาง (Land Magic Zone: X 44%-56%, Y 45%-55%)
-            if (centerXPercent >= 44 && centerXPercent <= 56 && centerYPercent >= 44 && centerYPercent <= 56) {
-                // ล็อคตรงกลางเป๊ะ & นอนทันที (90deg)
+            // ตรวจสอบโซนเมืองตรงกลาง (Land Magic Zone: X 35%-65%, Y 44%-54%)
+            if (centerXPercent >= 35 && centerXPercent <= 65 && centerYPercent >= 44 && centerYPercent <= 54) {
+                // ล็อคตรงกลางเป๊ะ & นอนการ์ด (90deg) อัตโนมัติ
                 centerXPercent = 50;
-                centerYPercent = 50;
+                centerYPercent = 49.5;
                 draggedEl.classList.add('tapped');
             } else {
-                // กฎขอบเขตสนาม A (ห้ามข้ามเส้นกึ่งกลาง 57% ขึ้นไป, ห้ามออกนอกถนน X 26%-74%, ไม่เกิน 81% ล่าง)
+                // กรอบสี่เหลี่ยมสีชมพูล่าง (Field A):
+                // แนวนอน X: 26% ถึง 74% (ไม่ล้นขอบถนน)
+                // แนวตั้ง Y: 56% ถึง 75% (ใต้กล่องเมืองตรงกลาง และเหนือเส้นขาวล่างเป๊ะ)
                 centerXPercent = Math.max(26, Math.min(74, centerXPercent));
-                centerYPercent = Math.max(57, Math.min(81, centerYPercent));
+                centerYPercent = Math.max(56, Math.min(75, centerYPercent));
             }
 
-            // ปรับตำแหน่ง Pixel ตามพิกัดที่ผ่านการล็อค
             const finalLeft = (centerXPercent * window.innerWidth / 100) - (cardW / 2);
             const finalTop = (centerYPercent * window.innerHeight / 100) - (cardH / 2);
 
@@ -886,7 +895,7 @@
             const cardW = 76;
             const cardH = 110;
 
-            // คำนวณแบบสมมาตรกลับด้าน: 100 - X, 100 - Y
+            // สะท้อนกลับพิกัดสมมาตร: 100 - X, 100 - Y (ตกในสี่เหลี่ยมสีชมพูด้านบนเป๊ะ)
             const oppCenterX = 100 - data.centerX;
             const oppCenterY = 100 - data.centerY;
 

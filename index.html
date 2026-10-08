@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Battle of Talingchan VTT</title>
-    <!-- โหลด PeerJS สำหรับเล่นออนไลน์แบบ P2P -->
+    <!-- โหลด PeerJS สำหรับเล่นออนไลน์ P2P -->
     <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <style>
         :root {
@@ -15,13 +15,13 @@
         body, html { margin: 0; padding: 0; overflow: hidden; background: var(--bg-dark); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; }
         .hidden { display: none !important; }
 
-        /* แถบควบคุมบนสุด */
+        /* แถบด้านบน */
         #top-toolbar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 42px;
+            height: 40px;
             background: rgba(15, 15, 20, 0.95);
             border-bottom: 1px solid #444;
             display: flex;
@@ -55,13 +55,13 @@
         .room-input { padding: 10px 18px; font-size: 18px; border-radius: 8px; border: 2px solid #555; background: #222; color: white; text-align: center; width: 240px; outline: none; }
         .room-input:focus { border-color: var(--primary); }
         .side-btn-container { display: flex; gap: 20px; }
-        .btn-side { padding: 18px 36px; font-size: 20px; font-weight: bold; cursor: pointer; background: #222; color: white; border: 2px solid #555; border-radius: 12px; transition: 0.25s; text-transform: uppercase; }
+        .btn-side { padding: 16px 32px; font-size: 20px; font-weight: bold; cursor: pointer; background: #222; color: white; border: 2px solid #555; border-radius: 12px; transition: 0.25s; text-transform: uppercase; }
         .btn-side:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .btn-side.a:hover { border-color: #007bff; color: #007bff; box-shadow: 0 0 20px rgba(0, 123, 255, 0.5); }
         .btn-side.b:hover { border-color: #dc3545; color: #dc3545; box-shadow: 0 0 20px rgba(220, 53, 69, 0.5); }
 
         /* 2. หน้าจัดเด็ค */
-        #screen-builder { background: url('board-bg.png.jpg') center/cover; flex-direction: row; z-index: 200; padding-top: 42px; box-sizing: border-box; }
+        #screen-builder { background: url('board-bg.png.jpg') center/cover; flex-direction: row; z-index: 200; padding-top: 40px; box-sizing: border-box; }
         .builder-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); z-index: -1; }
         
         .pool-panel { width: 380px; background: var(--panel-bg); border-right: 2px solid #333; display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; }
@@ -86,7 +86,7 @@
         .add-btns div { flex: 1; text-align: center; padding: 6px 0; font-size: 11px; font-weight: bold; border: 1px solid #555; }
         .add-btns div:hover { background: #777; color: var(--primary); }
 
-        .deck-panel { flex-grow: 1; display: flex; flex-direction: column; padding: 15px 20px; box-sizing: border-box; gap: 12px; height: calc(100vh - 42px); overflow: hidden; }
+        .deck-panel { flex-grow: 1; display: flex; flex-direction: column; padding: 15px 20px; box-sizing: border-box; gap: 12px; height: calc(100vh - 40px); overflow: hidden; }
         .deck-section { background: rgba(0,0,0,0.7); border: 2px solid #444; border-radius: 12px; padding: 12px 15px; display: flex; flex-direction: column; position: relative; }
         .deck-section.top { height: 58%; }
         .deck-section.bottom { height: 38%; border-color: #a71d2a; }
@@ -104,36 +104,26 @@
         .btn-start:hover { background: #218838; transform: scale(1.04); }
 
         /* 3. หน้ากระดานเกม (VTT Board) */
-        #screen-board { z-index: 100; position: relative; padding-top: 42px; box-sizing: border-box; }
+        #screen-board { z-index: 100; position: relative; padding-top: 40px; box-sizing: border-box; }
         #background-layer { position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; background-image: url('board-bg.png.jpg'); background-size: cover; background-position: center; z-index: 1; }
-        #play-area { position: absolute; width: 100%; height: calc(100vh - 42px); top: 42px; left: 0; z-index: 5; }
+        #play-area { position: absolute; width: 100%; height: calc(100vh - 40px); top: 40px; left: 0; z-index: 5; }
 
         /* การ์ดบนกระดาน */
-        .card { width: 85px; height: 125px; background: #222; border: 2px solid #111; border-radius: 6px; background-size: cover; background-position: center; cursor: grab; position: absolute; z-index: 10; transition: box-shadow 0.15s; box-shadow: 2px 2px 8px rgba(0,0,0,0.8); }
+        .card { width: 85px; height: 125px; background: #222; border: 2px solid #111; border-radius: 6px; background-size: cover; background-position: center; cursor: grab; position: absolute; z-index: 10; transition: box-shadow 0.15s, transform 0.2s; box-shadow: 2px 2px 8px rgba(0,0,0,0.8); }
         .card:hover { box-shadow: 0 0 12px var(--primary); z-index: 30; }
-        .card.dragging { cursor: grabbing; z-index: 1000 !important; }
-        .card.tapped { transform: rotate(90deg); }
-        .card.is-opponent { border-color: #dc3545; }
+        .card.dragging { cursor: grabbing; z-index: 1000 !important; transition: none !important; }
         
-        .card-power-badge {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: #ffcc00;
-            color: #000;
-            font-weight: bold;
-            font-size: 12px;
-            padding: 2px 5px;
-            border-radius: 10px;
-            border: 1px solid #000;
-            display: none;
-            z-index: 20;
-        }
+        /* สภาพนอน (Tap) */
+        .card.tapped { transform: rotate(90deg) !important; }
+        /* การ์ดฝ่ายตรงข้ามต้องหงายกลับหัวลงมาหาเรา */
+        .card.is-opponent { transform: rotate(180deg); border-color: #dc3545; }
+        .card.is-opponent.tapped { transform: rotate(270deg) !important; }
 
         /* มือผู้เล่น */
-        .hand-zone { position: absolute; display: flex; align-items: flex-end; justify-content: center; height: 140px; width: 70%; z-index: 50; pointer-events: none; bottom: 0; left: 50%; transform: translateX(-50%); }
-        .hand-zone.opponent { top: 45px; bottom: auto; }
-        .hand-zone > .card { position: relative !important; left: auto !important; top: auto !important; margin: 0 -22px; pointer-events: auto; transition: transform 0.2s, margin 0.2s; }
+        .hand-zone { position: absolute; display: flex; align-items: flex-end; justify-content: center; height: 150px; width: 70%; z-index: 50; bottom: 0; left: 50%; transform: translateX(-50%); transition: background 0.2s; }
+        .hand-zone.drag-over { background: rgba(40, 167, 69, 0.25); border-radius: 12px 12px 0 0; }
+        .hand-zone.opponent { top: 40px; bottom: auto; pointer-events: none; }
+        .hand-zone > .card { position: relative !important; left: auto !important; top: auto !important; margin: 0 -20px; transition: transform 0.2s, margin 0.2s; }
         .hand-zone > .card:hover { transform: translateY(-35px) scale(1.15); z-index: 40; margin: 0 12px; }
 
         /* โซนคงที่บนบอร์ด */
@@ -148,8 +138,8 @@
         .life-card { width: 85px; height: 50px; background: linear-gradient(135deg, #a71d2a 0%, #5c0f16 100%); cursor: pointer; border: 2px solid #ff4d4d; border-radius: 5px; z-index: 40; transition: transform 0.2s; box-shadow: 2px 2px 8px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; text-shadow: 1px 1px 2px black; font-size: 12px; background-size: cover; background-position: center; }
         .life-card:hover { transform: scale(1.05) translateX(6px); }
 
-        .zone-box { position: absolute; background: rgba(0,0,0,0.85); color: white; border: 2px solid #555; border-radius: 8px; font-weight: bold; padding: 8px 14px; cursor: pointer; text-align: center; z-index: 40; backdrop-filter: blur(4px); font-size: 12px; }
-        .zone-box:hover { background: rgba(255,255,255,0.2); border-color: white; }
+        .zone-box { position: absolute; background: rgba(0,0,0,0.85); color: white; border: 2px solid #555; border-radius: 8px; font-weight: bold; padding: 8px 14px; cursor: pointer; text-align: center; z-index: 40; backdrop-filter: blur(4px); font-size: 12px; transition: 0.2s; }
+        .zone-box.drag-over { background: rgba(220, 53, 69, 0.6) !important; border-color: #ff4d4d !important; transform: scale(1.08); }
         .zone-box.opponent.hell { top: 60px; right: 20px; cursor: default; }
         .zone-box.opponent.banish { top: 110px; right: 20px; cursor: default; border-color: #6f42c1; }
         .zone-box.my-side.hell { bottom: 165px; right: 20px; }
@@ -157,33 +147,26 @@
 
         .card-back { background: repeating-linear-gradient(45deg, #111, #111 10px, #222 10px, #222 20px) !important; border: 2px solid #555 !important; }
 
-        /* เมนูคลิกขวา (Context Menu) */
-        #context-menu {
-            position: fixed;
-            background: rgba(20, 20, 28, 0.96);
-            border: 1px solid #555;
-            border-radius: 6px;
-            padding: 5px 0;
-            z-index: 3000;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.8);
-            font-size: 13px;
-            min-width: 150px;
-        }
-        .menu-item { padding: 8px 15px; cursor: pointer; transition: 0.15s; }
-        .menu-item:hover { background: #333; color: var(--primary); }
-        .menu-separator { height: 1px; background: #444; margin: 4px 0; }
-
-        /* Modal */
+        /* Modal หน้าต่างเปิดดูการ์ด */
         .modal { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 4000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
         .modal-content { background: var(--panel-bg); padding: 25px; border: 2px solid #555; border-radius: 12px; width: 85%; max-height: 85%; overflow-y: auto; text-align: center; }
-        .card-container { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 15px; }
-        .card.in-modal { position: relative; margin: 0; cursor: pointer; transition: 0.15s; }
-        .card.selected { border: 4px solid #28a745; transform: translateY(-8px); box-shadow: 0 10px 20px rgba(40,167,69,0.5); }
+        .reveal-grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 15px; }
+        .reveal-card-box { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .reveal-btns { display: flex; flex-direction: column; gap: 4px; width: 85px; }
+        .btn-act { padding: 4px 0; font-size: 11px; font-weight: bold; border-radius: 4px; border: none; cursor: pointer; color: white; transition: 0.15s; }
+        .btn-act.to-hand { background: #28a745; }
+        .btn-act.to-hand:hover { background: #218838; }
+        .btn-act.to-bot { background: #ffc107; color: black; }
+        .btn-act.to-bot:hover { background: #e0a800; }
+        .btn-act.to-hell { background: #dc3545; }
+        .btn-act.to-hell:hover { background: #c82333; }
+        .btn-act.to-banish { background: #6f42c1; }
+        .btn-act.to-banish:hover { background: #5a32a3; }
     </style>
 </head>
 <body>
 
-    <!-- แถบเครื่องมือควบคุมการเล่น (Rule Book VTT Tools) -->
+    <!-- แถบเครื่องมือควบคุมการเล่น -->
     <div id="top-toolbar">
         <div class="tool-group">
             <span>ห้อง: <b id="nav-room" style="color: var(--primary);">-</b></span>
@@ -191,10 +174,10 @@
             <span id="nav-status" style="margin-left: 10px; font-weight: bold; color: #ffc107;">🟡 รอเชื่อมต่อ...</span>
         </div>
         <div class="tool-group">
-            <button class="vtt-btn" onclick="rollDice()">🎲 ทอยลูกเต๋า (1-6)</button>
-            <button class="vtt-btn" onclick="drawCard(1)">จั่ว 1 ใบ</button>
-            <button class="vtt-btn" onclick="mulliganHand()">🔄 เปลี่ยนมือ (Mulligan)</button>
-            <button class="vtt-btn" onclick="untapAllMyCards()">⚡ ตื่นการ์ดทั้งหมด (Draw Phase)</button>
+            <button class="vtt-btn" onclick="rollDice()">🎲 ทอยเต๋า (1-6)</button>
+            <button class="vtt-btn" onclick="drawCard(1)" style="background:#007bff; border-color:#007bff;">จั่วปกติ 1 ใบ</button>
+            <button class="vtt-btn" onclick="openDeckSelector()" style="background:#ffc107; color:black; border-color:#e0a800;">🔍 เปิดเลือกการ์ดในกอง</button>
+            <button class="vtt-btn" onclick="untapAllMyCards()">⚡ ตั้งการ์ดทั้งหมด (Untap)</button>
         </div>
     </div>
 
@@ -202,7 +185,7 @@
     <div id="screen-side" class="screen">
         <h1 class="game-title">Battle of Talingchan</h1>
         <div class="room-box">
-            <label for="room-id" style="color: #ccc;">ชื่อห้อง (ใส่ให้ตรงกันเพื่อเจอกัน):</label>
+            <label for="room-id" style="color: #ccc;">ชื่อห้องสำหรับเล่นด้วยกัน:</label>
             <input type="text" id="room-id" class="room-input" value="talingchan-vtt">
         </div>
         <div class="side-btn-container">
@@ -216,7 +199,7 @@
         <div class="builder-overlay"></div>
         <div class="pool-panel">
             <h2>คลังการ์ดทั้งหมด</h2>
-            <div class="pool-settings">ดึงรูป <b>card (1).jpg</b> ถึง <b>card (200).jpg</b> จาก <code>cards/</code></div>
+            <div class="pool-settings" id="pool-info">กำลังตรวจนับการ์ดที่มีอยู่ในโฟลเดอร์...</div>
             <div id="card-pool" class="card-pool"></div>
         </div>
 
@@ -245,103 +228,83 @@
         </div>
     </div>
 
-    <!-- 3. หน้ากระดานเกม (Sandbox VTT) -->
+    <!-- 3. หน้ากระดานเกม (VTT Board) -->
     <div id="screen-board" class="screen hidden">
         <div id="background-layer"></div> 
         <div id="play-area"></div>
         
-        <!-- ฝั่งตรงข้าม (Opponent) -->
+        <!-- ฝั่งตรงข้าม -->
         <div id="opponent-deck" class="deck-zone opponent">OPPONENT<br>DECK (<span id="opp-deck-count">0</span>)</div>
         <div id="opponent-hand" class="hand-zone opponent"></div>
         <div id="opponent-life" class="life-zone opponent"></div>
         <div class="zone-box opponent hell">นรก (<span id="opp-hell-count">0</span>)</div>
         <div class="zone-box opponent banish">มิติมืด (<span id="opp-banish-count">0</span>)</div>
         
-        <!-- ฝั่งเรา (My Side) -->
+        <!-- ฝั่งเรา -->
         <div id="life-zone" class="life-zone my-side"></div>
         <div id="hand-zone" class="hand-zone my-side"></div>
-        <div id="deck-zone" class="deck-zone my-side">DECK<br>(<span id="my-deck-count">0</span>)</div>
-        <div class="zone-box my-side hell" onclick="openZoneModal('hell')">นรก (<span id="my-hell-count">0</span>)</div>
-        <div class="zone-box my-side banish" onclick="openZoneModal('banish')">มิติมืด (<span id="my-banish-count">0</span>)</div>
+        <div id="deck-zone" class="deck-zone my-side" onclick="drawCard(1)">DECK<br>(<span id="my-deck-count">0</span>)</div>
+        <div id="my-hell-box" class="zone-box my-side hell" onclick="openZoneViewer('hell')">นรก (<span id="my-hell-count">0</span>)</div>
+        <div id="my-banish-box" class="zone-box my-side banish" onclick="openZoneViewer('banish')">มิติมืด (<span id="my-banish-count">0</span>)</div>
     </div>
 
-    <!-- Context Menu สำหรับคลิกขวาที่การ์ดบนกระดาน -->
-    <div id="context-menu" class="hidden">
-        <div class="menu-item" onclick="contextToggleTap()">⚡ สลับ ตื่น ⇄ นอน (90°)</div>
-        <div class="menu-item" onclick="contextToggleFlip()">👁️ พลิก คว่ำ ⇄ หงาย</div>
-        <div class="menu-separator"></div>
-        <div class="menu-item" onclick="contextChangePower(1)">➕ เพิ่มพลัง (+1)</div>
-        <div class="menu-item" onclick="contextChangePower(-1)">➖ ลดพลัง (-1)</div>
-        <div class="menu-item" onclick="contextResetPower()">🔄 รีเซ็ตพลัง (0)</div>
-        <div class="menu-separator"></div>
-        <div class="menu-item" onclick="contextSendToHand()">✋ นำกลับขึ้นมือ</div>
-        <div class="menu-item" onclick="contextSendToHell()">🔥 ส่งลงนรก (Hell)</div>
-        <div class="menu-item" onclick="contextSendToBanish()">🌌 ส่งไปมิติมืด</div>
-        <div class="menu-item" onclick="contextSendToDeckBottom()">📥 นำไว้ใต้กอง Deck</div>
+    <!-- Modal เปิดเลือกการ์ดในกองทีละใบ -->
+    <div id="selector-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 style="color: var(--primary); margin-top:0;">เปิดเลือกการ์ดในกอง</h2>
+            <div style="margin-bottom: 15px; display:flex; gap:10px; justify-content:center;">
+                <button onclick="revealNextCard()" class="vtt-btn" style="background:#17a2b8; padding:8px 16px; font-size:14px;">➕ เปิดใบบนสุด (+1 ใบ)</button>
+                <button onclick="closeModal('selector-modal')" class="vtt-btn" style="padding:8px 16px; font-size:14px;">ปิดหน้าต่าง</button>
+            </div>
+            <div id="reveal-cards-container" class="reveal-grid"></div>
+        </div>
     </div>
 
-    <!-- Context Menu สำหรับกอง Deck -->
-    <div id="deck-context-menu" class="hidden" style="position:fixed; background:rgba(20,20,28,0.96); border:1px solid #555; border-radius:6px; padding:5px 0; z-index:3000; min-width:160px;">
-        <div class="menu-item" onclick="drawCard(1)">จั่ว 1 ใบ</div>
-        <div class="menu-item" onclick="openScryModal()">สอดแนม (ดูใบบนสุด)</div>
-        <div class="menu-item" onclick="millToHell(1)">ธรณีสูบ (ส่งลงนรก 1 ใบ)</div>
-        <div class="menu-item" onclick="shuffleMyDeck()">สับกอง (Shuffle)</div>
-        <div class="menu-separator"></div>
-        <div class="menu-item" onclick="openSearchDeckModal()">สำรวจ / ค้นหากองการ์ด</div>
-    </div>
-
-    <!-- Modal ทั่วไปสำหรับเปิดดูการ์ด -->
+    <!-- Modal เปิดดูการ์ดในนรก หรือ มิติมืด -->
     <div id="viewer-modal" class="modal hidden">
         <div class="modal-content">
-            <h2 id="modal-title" style="color: var(--primary);">การ์ด</h2>
-            <div id="modal-action-bar" style="margin-bottom: 12px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;"></div>
-            <div id="modal-card-container" class="card-container"></div>
-            <div style="margin-top: 15px;"><button onclick="closeModal()" class="vtt-btn" style="padding: 8px 20px;">ปิด</button></div>
+            <h2 id="viewer-title" style="color: var(--primary); margin-top:0;">รายการการ์ด</h2>
+            <div style="margin-bottom: 15px;">
+                <button onclick="closeModal('viewer-modal')" class="vtt-btn" style="padding:6px 18px;">ปิด</button>
+            </div>
+            <div id="viewer-cards-container" class="reveal-grid"></div>
         </div>
     </div>
 
     <script>
-        const TOTAL_CARDS = 200;
+        const MAX_SCAN = 150;
+        let validCards = []; // เก็บเฉพาะเลขการ์ดที่มีภาพอยู่จริง
+
         let currentRoomId = 'talingchan-vtt';
         let mySide = 'A';
 
-        // เด็คที่จัดไว้
         let arrMainDeck = [];
         let arrLifeDeck = [];
 
-        // สถานะในเกม
         let inGameDeck = [];
         let inGameHand = [];
         let inGameLife = [];
         let inGameHell = [];
         let inGameBanish = [];
 
+        // การ์ดที่เปิดค้างไว้ในหน้าเลือก
+        let revealedCards = [];
+
         // PeerJS P2P
         let peer = null;
         let conn = null;
         let connectTimer = null;
 
-        // เมนูคลิกขวา & การลากวาง
-        let activeTargetCard = null;
+        // ตัวแปรลากวาง
         let draggedEl = null;
         let dragStartX = 0, dragStartY = 0;
         let initialCardLeft = 0, initialCardTop = 0;
+        let hasMoved = false;
 
-        // Modal Selection
-        let selectedModalCardIndex = null;
-        let currentModalMode = '';
-
-        // --- เริ่มต้นโหลดข้อมูลเด็คจากเครื่อง ---
         window.onload = () => {
             const savedRoom = localStorage.getItem('tlc_saved_room');
             if (savedRoom) document.getElementById('room-id').value = savedRoom;
             loadDeckFromStorage();
-
-            // ปิด Context menu เมื่อคลิกที่อื่น
-            window.addEventListener('click', () => {
-                document.getElementById('context-menu').classList.add('hidden');
-                document.getElementById('deck-context-menu').classList.add('hidden');
-            });
         };
 
         function saveDeckToStorage() {
@@ -370,7 +333,47 @@
             el.style.color = color;
         }
 
-        // --- 1. เข้าห้อง และเชื่อมต่อ P2P ออนไลน์ ---
+        // --- 1. ตรวจสอบเฉพาะการ์ดที่มีอยู่จริงในโฟลเดอร์ (ไม่แสดงการ์ดดำ) ---
+        function checkExistingCards(callback) {
+            if (validCards.length > 0) return callback();
+            let checked = 0;
+            validCards = [];
+            for (let i = 1; i <= MAX_SCAN; i++) {
+                const img = new Image();
+                img.src = `cards/card (${i}).jpg`;
+                img.onload = () => {
+                    validCards.push(i);
+                    validCards.sort((a,b)=>a-b);
+                    checked++;
+                    if (checked === MAX_SCAN) callback();
+                };
+                img.onerror = () => {
+                    checked++;
+                    if (checked === MAX_SCAN) callback();
+                };
+            }
+        }
+
+        function buildCardPool() {
+            const pool = document.getElementById('card-pool');
+            pool.innerHTML = '';
+            document.getElementById('pool-info').innerText = `พบการ์ดที่ใช้งานได้ทั้งหมด ${validCards.length} ใบ`;
+            validCards.forEach(i => {
+                const card = document.createElement('div');
+                card.className = 'pool-card-item';
+                card.style.backgroundImage = `url('cards/card (${i}).jpg')`;
+                card.innerHTML = `
+                    <div style="position: absolute; top: 4px; left: 4px; font-size: 11px; background: rgba(0,0,0,0.8); padding: 2px 4px; border-radius: 3px;">#${i}</div>
+                    <div class="add-btns">
+                        <div onclick="addToDeck(${i}, 'main')">+ เล่น</div>
+                        <div onclick="addToDeck(${i}, 'life')">+ ชีวิต</div>
+                    </div>
+                `;
+                pool.appendChild(card);
+            });
+        }
+
+        // --- 2. การเชื่อมต่อออนไลน์ P2P ---
         function selectSide(side) {
             mySide = side;
             currentRoomId = document.getElementById('room-id').value.trim() || 'talingchan-vtt';
@@ -381,8 +384,12 @@
             document.getElementById('nav-side').style.color = side === 'A' ? '#007bff' : '#dc3545';
 
             switchScreen('screen-side', 'screen-builder');
-            buildCardPool();
-            renderBuilderDecks();
+            
+            checkExistingCards(() => {
+                buildCardPool();
+                renderBuilderDecks();
+            });
+
             initNetworking();
         }
 
@@ -458,25 +465,7 @@
             }
         }
 
-        // --- 2. หน้าจัดเด็ค (Deck Builder) ---
-        function buildCardPool() {
-            const pool = document.getElementById('card-pool');
-            if (pool.children.length > 0) return;
-            for (let i = 1; i <= TOTAL_CARDS; i++) {
-                const card = document.createElement('div');
-                card.className = 'pool-card-item';
-                card.style.backgroundImage = `url('cards/card (${i}).jpg')`;
-                card.innerHTML = `
-                    <div style="position: absolute; top: 4px; left: 4px; font-size: 11px; background: rgba(0,0,0,0.8); padding: 2px 4px; border-radius: 3px;">#${i}</div>
-                    <div class="add-btns">
-                        <div onclick="addToDeck(${i}, 'main')">+ เล่น</div>
-                        <div onclick="addToDeck(${i}, 'life')">+ ชีวิต</div>
-                    </div>
-                `;
-                pool.appendChild(card);
-            }
-        }
-
+        // --- 3. จัดเด็ค (Builder) ---
         function addToDeck(cardNum, type) {
             if (type === 'main') {
                 if (arrMainDeck.length >= 50) return alert('Main Deck สูงสุด 50 ใบ');
@@ -505,9 +494,17 @@
             }
         }
 
+        // สุ่มเฉพาะการ์ดที่มีอยู่จริงมาใส่ซ้ำจนเต็ม
         function quickFillDecks() {
-            while (arrMainDeck.length < 50) arrMainDeck.push(Math.floor(Math.random() * TOTAL_CARDS) + 1);
-            while (arrLifeDeck.length < 5) arrLifeDeck.push(Math.floor(Math.random() * TOTAL_CARDS) + 1);
+            if (validCards.length === 0) return alert('ไม่พบการ์ดในระบบ');
+            while (arrMainDeck.length < 50) {
+                const rand = validCards[Math.floor(Math.random() * validCards.length)];
+                arrMainDeck.push(rand);
+            }
+            while (arrLifeDeck.length < 5) {
+                const rand = validCards[Math.floor(Math.random() * validCards.length)];
+                arrLifeDeck.push(rand);
+            }
             saveDeckToStorage();
             renderBuilderDecks();
         }
@@ -537,7 +534,7 @@
             });
         }
 
-        // --- 3. เข้าสู่กระดานเกม & กติกาการ Setup (Rule Book 3.2) ---
+        // --- 4. เริ่มเกม (Board Setup) ---
         function startGame() {
             if (arrMainDeck.length === 0) return alert('กรุณาเลือกการ์ดใส่ Main Deck ก่อนครับ');
 
@@ -546,21 +543,19 @@
             inGameHand = [];
             inGameHell = [];
             inGameBanish = [];
+            revealedCards = [];
 
-            // 1. สับ Deck อัตโนมัติ
             inGameDeck.sort(() => Math.random() - 0.5);
 
-            // 2. จั่วการ์ดเริ่มต้น 5 ใบเข้ามือทันทีตามกฎ Setup
+            // จั่วเริ่มต้น 5 ใบ[cite: 21]
             for (let i = 0; i < 5; i++) {
                 if (inGameDeck.length > 0) {
-                    const cardNum = inGameDeck.shift();
-                    inGameHand.push({ id: 'card-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4), num: cardNum });
+                    inGameHand.push({ id: 'c-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4), num: inGameDeck.shift() });
                 }
             }
 
             switchScreen('screen-builder', 'screen-board');
             renderMyBoard();
-            setupDeckListeners();
             syncAllCounts();
         }
 
@@ -583,7 +578,6 @@
             document.getElementById('opp-hell-count').innerText = payload.hellCount;
             document.getElementById('opp-banish-count').innerText = payload.banishCount;
 
-            // หลังการ์ดบนมือคู่ต่อสู้
             const oppHand = document.getElementById('opponent-hand');
             oppHand.innerHTML = '';
             for (let i = 0; i < payload.handCount; i++) {
@@ -592,7 +586,6 @@
                 oppHand.appendChild(el);
             }
 
-            // Life Card คู่ต่อสู้ (ถ้าหงายจะเห็นรูป ถ้าคว่ำจะเป็นสีแดง)
             const oppLife = document.getElementById('opponent-life');
             oppLife.innerHTML = '';
             if (payload.lifeDeck) {
@@ -606,7 +599,6 @@
         }
 
         function renderMyBoard() {
-            // วาด Life Card ฝั่งเรา
             const lifeZone = document.getElementById('life-zone');
             lifeZone.innerHTML = '';
             inGameLife.forEach((lifeObj, idx) => {
@@ -618,14 +610,12 @@
                 } else {
                     el.innerText = `LIFE #${idx + 1}`;
                 }
-                // คลิกซ้าย = หยิบขึ้นมือ
                 el.onclick = () => {
                     inGameLife.splice(idx, 1);
                     inGameHand.push({ id: 'c-' + Date.now(), num: lifeObj.num });
                     renderMyBoard();
                     syncAllCounts();
                 };
-                // คลิกขวา = พลิก คว่ำ ⇄ หงาย
                 el.oncontextmenu = (e) => {
                     e.preventDefault();
                     lifeObj.revealed = !lifeObj.revealed;
@@ -646,24 +636,10 @@
                 el.className = 'card';
                 el.id = cardObj.id;
                 el.style.backgroundImage = `url('cards/card (${cardObj.num}).jpg')`;
-                // ลากการ์ดจากมือลงสนาม
                 el.onmousedown = (e) => startDragFromHand(e, cardObj, idx);
                 handZone.appendChild(el);
             });
             syncAllCounts();
-        }
-
-        // --- 4. การจัดการกอง Deck และเครื่องมือ Rule Book ---
-        function setupDeckListeners() {
-            const deckEl = document.getElementById('deck-zone');
-            deckEl.onclick = () => drawCard(1);
-            deckEl.oncontextmenu = (e) => {
-                e.preventDefault();
-                const menu = document.getElementById('deck-context-menu');
-                menu.style.left = e.clientX + 'px';
-                menu.style.top = (e.clientY - 140) + 'px';
-                menu.classList.remove('hidden');
-            };
         }
 
         function drawCard(qty = 1) {
@@ -676,35 +652,11 @@
             syncAllCounts();
         }
 
-        function mulliganHand() {
-            if (inGameHand.length === 0) return alert('ไม่มีการ์ดบนมือให้เปลี่ยน');
-            const count = inGameHand.length;
-            inGameHand.forEach(c => inGameDeck.push(c.num));
-            inGameHand = [];
-            inGameDeck.sort(() => Math.random() - 0.5);
-            drawCard(count);
-            alert(`เปลี่ยนการ์ดบนมือ ${count} ใบเรียบร้อยแล้ว`);
-        }
-
         function untapAllMyCards() {
             document.querySelectorAll('#play-area > .card:not(.is-opponent)').forEach(el => {
                 el.classList.remove('tapped');
                 broadcastCardUpdate(el);
             });
-        }
-
-        function millToHell(qty = 1) {
-            for (let i = 0; i < qty; i++) {
-                if (inGameDeck.length === 0) break;
-                inGameHell.push(inGameDeck.shift());
-            }
-            syncAllCounts();
-            alert(`ส่งการ์ดใบบนสุด ${qty} ใบลงนรกแล้ว (ธรณีสูบ)`);
-        }
-
-        function shuffleMyDeck() {
-            inGameDeck.sort(() => Math.random() - 0.5);
-            alert('สับกอง Deck เรียบร้อยแล้ว');
         }
 
         function rollDice() {
@@ -713,7 +665,7 @@
             sendNetwork('DICE_ROLL', { val: res });
         }
 
-        // --- 5. การลากวางอิสระ (Sandbox Drag & Drop) & ระบบคลิกขวา ---
+        // --- 5. ลากวาง, ห้ามข้ามเส้นกึ่งกลาง, คลิกแล้วนอน/ตั้งทันที ---
         function startDragFromHand(e, cardObj, handIdx) {
             e.preventDefault();
             inGameHand.splice(handIdx, 1);
@@ -731,28 +683,13 @@
             el.className = 'card' + (isOpponent ? ' is-opponent' : '');
             el.id = id;
             el.dataset.cardNum = num;
-            el.dataset.power = 0;
-            el.dataset.flipped = 'false';
             el.style.backgroundImage = `url('cards/card (${num}).jpg')`;
             el.style.left = leftPx + 'px';
             el.style.top = topPx + 'px';
 
-            const badge = document.createElement('div');
-            badge.className = 'card-power-badge';
-            el.appendChild(badge);
-
             if (!isOpponent) {
                 el.onmousedown = (e) => {
                     if (e.button === 0) startDragging(e, el);
-                };
-                el.oncontextmenu = (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    activeTargetCard = el;
-                    const menu = document.getElementById('context-menu');
-                    menu.style.left = e.clientX + 'px';
-                    menu.style.top = e.clientY + 'px';
-                    menu.classList.remove('hidden');
                 };
             }
             return el;
@@ -761,6 +698,7 @@
         function startDragging(e, el) {
             draggedEl = el;
             draggedEl.classList.add('dragging');
+            hasMoved = false;
             dragStartX = e.clientX;
             dragStartY = e.clientY;
             initialCardLeft = parseFloat(el.style.left) || el.offsetLeft;
@@ -772,14 +710,98 @@
 
         function onMouseMove(e) {
             if (!draggedEl) return;
-            draggedEl.style.left = (initialCardLeft + (e.clientX - dragStartX)) + 'px';
-            draggedEl.style.top = (initialCardTop + (e.clientY - dragStartY)) + 'px';
+            const deltaX = e.clientX - dragStartX;
+            const deltaY = e.clientY - dragStartY;
+
+            if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
+                hasMoved = true;
+            }
+
+            let newLeft = initialCardLeft + deltaX;
+            let newTop = initialCardTop + deltaY;
+
+            // กฎ: ห้ามข้ามเส้นแบ่งกึ่งกลางสนาม (Center Line) ขึ้นไปฝั่งตรงข้าม
+            const centerLineY = window.innerHeight * 0.44;
+            if (newTop < centerLineY) {
+                newTop = centerLineY;
+            }
+
+            draggedEl.style.left = newLeft + 'px';
+            draggedEl.style.top = newTop + 'px';
+
+            // ตรวจจับการลากผ่านโซนทิ้งเพื่อทำไฮไลต์
+            checkZoneHighlights(e.clientX, e.clientY);
         }
 
-        function onMouseUp() {
+        function checkZoneHighlights(x, y) {
+            const handBox = document.getElementById('hand-zone').getBoundingClientRect();
+            const hellBox = document.getElementById('my-hell-box').getBoundingClientRect();
+            const banishBox = document.getElementById('my-banish-box').getBoundingClientRect();
+
+            document.getElementById('hand-zone').classList.toggle('drag-over', isInside(x, y, handBox));
+            document.getElementById('my-hell-box').classList.toggle('drag-over', isInside(x, y, hellBox));
+            document.getElementById('my-banish-box').classList.toggle('drag-over', isInside(x, y, banishBox));
+        }
+
+        function isInside(x, y, rect) {
+            return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+        }
+
+        function onMouseUp(e) {
             if (!draggedEl) return;
             draggedEl.classList.remove('dragging');
+
+            document.getElementById('hand-zone').classList.remove('drag-over');
+            document.getElementById('my-hell-box').classList.remove('drag-over');
+            document.getElementById('my-banish-box').classList.remove('drag-over');
+
+            // 1. ถ้าไม่ได้ขยับเมาส์ = เป็นการกดคลิกเพื่อ สลับ นอน ⇄ ตั้งการ์ด (Tap/Untap)
+            if (!hasMoved) {
+                draggedEl.classList.toggle('tapped');
+                broadcastCardUpdate(draggedEl);
+                cleanupDragListeners();
+                return;
+            }
+
+            // 2. ถ้าลากมาปล่อยที่มือ = เก็บกลับขึ้นมือ
+            const handBox = document.getElementById('hand-zone').getBoundingClientRect();
+            if (isInside(e.clientX, e.clientY, handBox) || e.clientY > window.innerHeight - 130) {
+                inGameHand.push({ id: draggedEl.id, num: draggedEl.dataset.cardNum });
+                sendNetwork('BOARD_CARD_REMOVE', { id: draggedEl.id });
+                draggedEl.remove();
+                renderHand();
+                cleanupDragListeners();
+                return;
+            }
+
+            // 3. ถ้าลากมาปล่อยที่ Hell Box = ส่งลงนรก
+            const hellBox = document.getElementById('my-hell-box').getBoundingClientRect();
+            if (isInside(e.clientX, e.clientY, hellBox)) {
+                inGameHell.push(draggedEl.dataset.cardNum);
+                sendNetwork('BOARD_CARD_REMOVE', { id: draggedEl.id });
+                draggedEl.remove();
+                syncAllCounts();
+                cleanupDragListeners();
+                return;
+            }
+
+            // 4. ถ้าลากมาปล่อยที่ Banish Box = ส่งไปมิติมืด
+            const banishBox = document.getElementById('my-banish-box').getBoundingClientRect();
+            if (isInside(e.clientX, e.clientY, banishBox)) {
+                inGameBanish.push(draggedEl.dataset.cardNum);
+                sendNetwork('BOARD_CARD_REMOVE', { id: draggedEl.id });
+                draggedEl.remove();
+                syncAllCounts();
+                cleanupDragListeners();
+                return;
+            }
+
+            // 5. ปล่อยบนสนามปกติ -> ส่งพิกัดให้คู่ต่อสู้
             broadcastCardUpdate(draggedEl);
+            cleanupDragListeners();
+        }
+
+        function cleanupDragListeners() {
             window.removeEventListener('mousemove', onMouseMove);
             window.removeEventListener('mouseup', onMouseUp);
             draggedEl = null;
@@ -794,9 +816,7 @@
                 cardNum: el.dataset.cardNum,
                 xPercent: xPercent,
                 yPercent: yPercent,
-                tapped: el.classList.contains('tapped'),
-                flipped: el.dataset.flipped === 'true',
-                power: parseInt(el.dataset.power || 0)
+                tapped: el.classList.contains('tapped')
             });
         }
 
@@ -814,194 +834,106 @@
             }
 
             el.classList.toggle('tapped', data.tapped);
-            el.dataset.flipped = data.flipped ? 'true' : 'false';
-            if (data.flipped) {
-                el.classList.add('card-back');
-            } else {
-                el.classList.remove('card-back');
-                el.style.backgroundImage = `url('cards/card (${data.cardNum}).jpg')`;
-            }
-
-            const badge = el.querySelector('.card-power-badge');
-            if (data.power !== 0) {
-                badge.style.display = 'block';
-                badge.innerText = (data.power > 0 ? '+' : '') + data.power;
-            } else {
-                badge.style.display = 'none';
-            }
         }
 
-        // --- 6. คำสั่ง Context Menu บนการ์ด ---
-        function contextToggleTap() {
-            if (!activeTargetCard) return;
-            activeTargetCard.classList.toggle('tapped');
-            broadcastCardUpdate(activeTargetCard);
+        // --- 6. ระบบเปิดเลือกการ์ดในกองทีละใบ (Scry / Search Deck) ---
+        function openDeckSelector() {
+            revealedCards = [];
+            renderRevealedCards();
+            document.getElementById('selector-modal').classList.remove('hidden');
         }
 
-        function contextToggleFlip() {
-            if (!activeTargetCard) return;
-            const isFlipped = activeTargetCard.dataset.flipped === 'true';
-            activeTargetCard.dataset.flipped = isFlipped ? 'false' : 'true';
-            if (!isFlipped) {
-                activeTargetCard.classList.add('card-back');
-            } else {
-                activeTargetCard.classList.remove('card-back');
-                activeTargetCard.style.backgroundImage = `url('cards/card (${activeTargetCard.dataset.cardNum}).jpg')`;
-            }
-            broadcastCardUpdate(activeTargetCard);
-        }
-
-        function contextChangePower(delta) {
-            if (!activeTargetCard) return;
-            let p = parseInt(activeTargetCard.dataset.power || 0) + delta;
-            activeTargetCard.dataset.power = p;
-            const badge = activeTargetCard.querySelector('.card-power-badge');
-            if (p !== 0) {
-                badge.style.display = 'block';
-                badge.innerText = (p > 0 ? '+' : '') + p;
-            } else {
-                badge.style.display = 'none';
-            }
-            broadcastCardUpdate(activeTargetCard);
-        }
-
-        function contextResetPower() {
-            if (!activeTargetCard) return;
-            activeTargetCard.dataset.power = 0;
-            activeTargetCard.querySelector('.card-power-badge').style.display = 'none';
-            broadcastCardUpdate(activeTargetCard);
-        }
-
-        function contextSendToHand() {
-            if (!activeTargetCard) return;
-            inGameHand.push({ id: activeTargetCard.id, num: activeTargetCard.dataset.cardNum });
-            sendNetwork('BOARD_CARD_REMOVE', { id: activeTargetCard.id });
-            activeTargetCard.remove();
-            renderHand();
-        }
-
-        function contextSendToHell() {
-            if (!activeTargetCard) return;
-            inGameHell.push(activeTargetCard.dataset.cardNum);
-            sendNetwork('BOARD_CARD_REMOVE', { id: activeTargetCard.id });
-            activeTargetCard.remove();
+        function revealNextCard() {
+            if (inGameDeck.length === 0) return alert('การ์ดใน Deck หมดแล้ว');
+            const cardNum = inGameDeck.shift();
+            revealedCards.push({ id: 'rev-' + Date.now() + '-' + Math.random().toString(36).substr(2,3), num: cardNum });
+            renderRevealedCards();
             syncAllCounts();
         }
 
-        function contextSendToBanish() {
-            if (!activeTargetCard) return;
-            inGameBanish.push(activeTargetCard.dataset.cardNum);
-            sendNetwork('BOARD_CARD_REMOVE', { id: activeTargetCard.id });
-            activeTargetCard.remove();
-            syncAllCounts();
-        }
-
-        function contextSendToDeckBottom() {
-            if (!activeTargetCard) return;
-            inGameDeck.push(activeTargetCard.dataset.cardNum);
-            sendNetwork('BOARD_CARD_REMOVE', { id: activeTargetCard.id });
-            activeTargetCard.remove();
-            syncAllCounts();
-        }
-
-        // --- 7. Modals สำรวจ Deck / Hell / มิติมืด / สอดแนม ---
-        function openZoneModal(zone) {
-            currentModalMode = zone;
-            selectedModalCardIndex = null;
-            const title = zone === 'hell' ? '🔥 Hell Zone (นรก)' : '🌌 Dark Dimension (มิติมืด)';
-            document.getElementById('modal-title').innerText = title;
-
-            const bar = document.getElementById('modal-action-bar');
-            bar.innerHTML = `
-                <button onclick="takeModalCardToHand()" class="vtt-btn">ดึงใบที่เลือกขึ้นมือ</button>
-            `;
-
-            renderModalList(zone === 'hell' ? inGameHell : inGameBanish);
-            document.getElementById('viewer-modal').classList.remove('hidden');
-        }
-
-        function openSearchDeckModal() {
-            currentModalMode = 'deck';
-            selectedModalCardIndex = null;
-            document.getElementById('modal-title').innerText = '🔍 สำรวจ Deck ทั้งหมด';
-
-            const bar = document.getElementById('modal-action-bar');
-            bar.innerHTML = `
-                <button onclick="takeModalCardToHand()" class="vtt-btn">ดึงเข้ามือ</button>
-                <button onclick="sendModalCardToHell()" class="vtt-btn">ส่งลงนรก</button>
-                <button onclick="putModalCardBottom()" class="vtt-btn">ไว้ใต้กอง</button>
-            `;
-
-            renderModalList(inGameDeck);
-            document.getElementById('viewer-modal').classList.remove('hidden');
-        }
-
-        function openScryModal() {
-            currentModalMode = 'scry';
-            selectedModalCardIndex = null;
-            const qty = parseInt(prompt('ต้องการสอดแนมกี่ใบจากใบบนสุด?', '3')) || 3;
-            document.getElementById('modal-title').innerText = `👁️ สอดแนม ${qty} ใบบนสุด`;
-
-            const bar = document.getElementById('modal-action-bar');
-            bar.innerHTML = `
-                <button onclick="takeModalCardToHand()" class="vtt-btn">ดึงเข้ามือ</button>
-                <button onclick="putModalCardBottom()" class="vtt-btn">นำไว้ใต้กอง</button>
-            `;
-
-            const scryList = inGameDeck.slice(0, qty);
-            renderModalList(scryList);
-            document.getElementById('viewer-modal').classList.remove('hidden');
-        }
-
-        function renderModalList(list) {
-            const container = document.getElementById('modal-card-container');
+        function renderRevealedCards() {
+            const container = document.getElementById('reveal-cards-container');
             container.innerHTML = '';
-            list.forEach((num, idx) => {
-                const el = document.createElement('div');
-                el.className = 'card in-modal' + (selectedModalCardIndex === idx ? ' selected' : '');
-                el.style.backgroundImage = `url('cards/card (${num}).jpg')`;
-                el.onclick = () => {
-                    selectedModalCardIndex = (selectedModalCardIndex === idx) ? null : idx;
-                    renderModalList(list);
-                };
-                container.appendChild(el);
+            revealedCards.forEach((c, idx) => {
+                const box = document.createElement('div');
+                box.className = 'reveal-card-box';
+
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card';
+                cardEl.style.position = 'relative';
+                cardEl.style.backgroundImage = `url('cards/card (${c.num}).jpg')`;
+
+                const btns = document.createElement('div');
+                btns.className = 'reveal-btns';
+                btns.innerHTML = `
+                    <button class="btn-act to-hand" onclick="handleCardAction(${idx}, 'hand')">ดึงเข้ามือ</button>
+                    <button class="btn-act to-bot" onclick="handleCardAction(${idx}, 'bottom')">ไว้ใต้กอง</button>
+                    <button class="btn-act to-hell" onclick="handleCardAction(${idx}, 'hell')">ส่งลงนรก</button>
+                    <button class="btn-act to-banish" onclick="handleCardAction(${idx}, 'banish')">ส่งมิติมืด</button>
+                `;
+
+                box.appendChild(cardEl);
+                box.appendChild(btns);
+                container.appendChild(box);
             });
         }
 
-        function takeModalCardToHand() {
-            if (selectedModalCardIndex === null) return alert('กรุณาคลิกเลือกการ์ดก่อนครับ');
-            let num = null;
-            if (currentModalMode === 'hell') num = inGameHell.splice(selectedModalCardIndex, 1)[0];
-            else if (currentModalMode === 'banish') num = inGameBanish.splice(selectedModalCardIndex, 1)[0];
-            else if (currentModalMode === 'deck' || currentModalMode === 'scry') num = inGameDeck.splice(selectedModalCardIndex, 1)[0];
-
-            if (num) {
-                inGameHand.push({ id: 'c-' + Date.now(), num: num });
+        function handleCardAction(idx, action) {
+            const c = revealedCards.splice(idx, 1)[0];
+            if (action === 'hand') {
+                inGameHand.push({ id: 'c-' + Date.now(), num: c.num });
                 renderHand();
-                closeModal();
+            } else if (action === 'bottom') {
+                inGameDeck.push(c.num);
+            } else if (action === 'hell') {
+                inGameHell.push(c.num);
+            } else if (action === 'banish') {
+                inGameBanish.push(c.num);
             }
+            renderRevealedCards();
+            syncAllCounts();
         }
 
-        function sendModalCardToHell() {
-            if (selectedModalCardIndex === null) return alert('กรุณาคลิกเลือกการ์ดก่อนครับ');
-            if (currentModalMode === 'deck') {
-                inGameHell.push(inGameDeck.splice(selectedModalCardIndex, 1)[0]);
-                syncAllCounts();
-                closeModal();
-            }
+        // --- 7. ดูการ์ดใน นรก / มิติมืด และดึงขึ้นมือได้ ---
+        function openZoneViewer(zone) {
+            const list = zone === 'hell' ? inGameHell : inGameBanish;
+            document.getElementById('viewer-title').innerText = zone === 'hell' ? '🔥 การ์ดในนรก' : '🌌 การ์ดในมิติมืด';
+            const container = document.getElementById('viewer-cards-container');
+            container.innerHTML = '';
+
+            list.forEach((num, idx) => {
+                const box = document.createElement('div');
+                box.className = 'reveal-card-box';
+
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card';
+                cardEl.style.position = 'relative';
+                cardEl.style.backgroundImage = `url('cards/card (${num}).jpg')`;
+
+                const btns = document.createElement('div');
+                btns.className = 'reveal-btns';
+                btns.innerHTML = `
+                    <button class="btn-act to-hand" onclick="retrieveFromZone('${zone}', ${idx})">ดึงเข้ามือ</button>
+                `;
+
+                box.appendChild(cardEl);
+                box.appendChild(btns);
+                container.appendChild(box);
+            });
+
+            document.getElementById('viewer-modal').classList.remove('hidden');
         }
 
-        function putModalCardBottom() {
-            if (selectedModalCardIndex === null) return alert('กรุณาคลิกเลือกการ์ดก่อนครับ');
-            if (currentModalMode === 'deck' || currentModalMode === 'scry') {
-                inGameDeck.push(inGameDeck.splice(selectedModalCardIndex, 1)[0]);
-                syncAllCounts();
-                closeModal();
-            }
+        function retrieveFromZone(zone, idx) {
+            const num = (zone === 'hell' ? inGameHell : inGameBanish).splice(idx, 1)[0];
+            inGameHand.push({ id: 'c-' + Date.now(), num: num });
+            renderHand();
+            syncAllCounts();
+            openZoneViewer(zone);
         }
 
-        function closeModal() {
-            document.getElementById('viewer-modal').classList.add('hidden');
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
         }
     </script>
 </body>

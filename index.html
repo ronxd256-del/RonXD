@@ -11,9 +11,9 @@
             --primary: #ffcc00;
             --bg-dark: #121318;
             --panel-bg: rgba(20, 22, 30, 0.95);
-            --my-zone: rgba(0, 123, 255, 0.15);
-            --opp-zone: rgba(220, 53, 69, 0.15);
-            --center-zone: rgba(255, 204, 0, 0.2);
+            --my-zone: rgba(0, 123, 255, 0.12);
+            --opp-zone: rgba(220, 53, 69, 0.12);
+            --center-zone: rgba(255, 204, 0, 0.15);
         }
         body, html { margin: 0; padding: 0; overflow: hidden; background: var(--bg-dark); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; }
         .hidden { display: none !important; }
@@ -104,18 +104,18 @@
         .btn-start { padding: 12px 35px; font-size: 18px; font-weight: bold; background: #28a745; color: white; border: 2px solid white; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .btn-start:hover { background: #218838; transform: scale(1.04); }
 
-        /* 3. สนามแข่งใหม่ (Symmetrical Digital Arena) */
+        /* 3. สนามแข่ง (Digital Arena) */
         #screen-board { z-index: 100; position: relative; padding-top: 42px; box-sizing: border-box; background: radial-gradient(circle, #1a1c26 0%, #0d0e14 100%); }
-        #play-area { position: absolute; width: 100%; height: calc(100vh - 42px); top: 42px; left: 0; z-index: 5; pointer-events: none; }
+        #play-area { position: absolute; width: 100%; height: calc(100vh - 42px); top: 42px; left: 0; z-index: 5; }
 
-        /* กรอบสนามหลักตรงกลาง แบ่ง 2 ฝั่งเท่ากันเป๊ะ */
+        /* กรอบสนามไกด์ไลน์ (Pointer-events: none ไม่บังการวางการ์ด) */
         #arena-container {
             position: absolute;
             top: 42px;
             left: 50%;
             transform: translateX(-50%);
             width: 72vw;
-            height: calc(100vh - 42px - 140px); /* เว้นพื้นที่ให้การ์ดในมือด้านล่าง */
+            height: calc(100vh - 42px - 140px);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -123,9 +123,9 @@
             padding: 10px 0;
             box-sizing: border-box;
             z-index: 2;
+            pointer-events: none;
         }
 
-        /* สนามฝั่งคู่ต่อสู้ (บน) */
         #opp-battlefield {
             width: 100%;
             height: 42%;
@@ -133,7 +133,6 @@
             border: 2px dashed rgba(220, 53, 69, 0.4);
             border-radius: 12px;
             position: relative;
-            box-shadow: inset 0 0 20px rgba(220, 53, 69, 0.1);
         }
         #opp-battlefield::after {
             content: 'สนามฝ่ายตรงข้าม (OPPONENT FIELD)';
@@ -146,12 +145,11 @@
             letter-spacing: 1px;
         }
 
-        /* โซนเมืองตรงกลาง (Land Magic Zone) */
         #center-land-zone {
             width: 140px;
             height: 80px;
             background: var(--center-zone);
-            border: 2px dashed rgba(255, 204, 0, 0.7);
+            border: 2px dashed rgba(255, 204, 0, 0.6);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -160,25 +158,15 @@
             font-weight: bold;
             color: var(--primary);
             text-align: center;
-            position: relative;
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
-            transition: 0.2s;
-        }
-        #center-land-zone.drag-over {
-            background: rgba(255, 204, 0, 0.5);
-            transform: scale(1.06);
-            box-shadow: 0 0 25px rgba(255, 204, 0, 0.6);
         }
 
-        /* สนามฝั่งเรา (ล่าง) */
         #my-battlefield {
             width: 100%;
             height: 42%;
             background: var(--my-zone);
-            border: 2px dashed rgba(0, 123, 255, 0.5);
+            border: 2px dashed rgba(0, 123, 255, 0.4);
             border-radius: 12px;
             position: relative;
-            box-shadow: inset 0 0 20px rgba(0, 123, 255, 0.15);
         }
         #my-battlefield::after {
             content: 'สนามของเรา (PLAYER FIELD)';
@@ -187,7 +175,7 @@
             left: 12px;
             font-size: 11px;
             font-weight: bold;
-            color: rgba(0, 123, 255, 0.7);
+            color: rgba(0, 123, 255, 0.6);
             letter-spacing: 1px;
         }
 
@@ -239,7 +227,6 @@
         .hand-zone.drag-over { background: rgba(40, 167, 69, 0.25); border-radius: 12px 12px 0 0; }
         .hand-zone.opponent { top: 42px; bottom: auto; height: 50px; pointer-events: none; }
         
-        /* การ์ดในมือผู้เล่น (105px x 150px) */
         .hand-zone:not(.opponent) > .card { 
             position: relative !important; 
             left: auto !important; 
@@ -264,7 +251,7 @@
             margin: 0 -20px;
         }
 
-        /* โซนด้านข้าง (Deck, Life, Hell, Banish) */
+        /* โซนด้านข้าง */
         .deck-zone { position: absolute; width: 72px; height: 104px; background: rgba(25,27,36,0.9); border: 2px solid #555; border-radius: 8px; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; text-align: center; z-index: 40; transition: 0.2s; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); font-size: 11px; }
         .deck-zone:hover { transform: scale(1.04); border-color: var(--primary); color: var(--primary); }
         .deck-zone.my-side { bottom: 15px; right: 15px; }
@@ -367,7 +354,7 @@
 
     <!-- 3. หน้ากระดานเกม (Digital Arena) -->
     <div id="screen-board" class="screen hidden">
-        <!-- กรอบสนาม 2 ฝั่งแบ่งเท่ากันเป๊ะ -->
+        <!-- กรอบสนามไกด์ไลน์ 2 ฝั่ง -->
         <div id="arena-container">
             <div id="opp-battlefield"></div>
             <div id="center-land-zone">โซนเมือง<br>(LAND MAGIC)</div>
@@ -805,14 +792,20 @@
             sendNetwork('DICE_ROLL', { val: res });
         }
 
-        // --- ระบบ Drag & Drop ล็อคเข้ากรอบสนามแบบสมบูรณ์ 100% ---
+        // --- ระบบ Drag & Drop อิสระ 100% ไม่ล็อค ไม่ดูดพิกัด ---
         function startDragFromHand(e, cardObj, handIdx) {
             e.preventDefault();
             inGameHand.splice(handIdx, 1);
             renderHand();
 
             const playArea = document.getElementById('play-area');
-            const cardEl = createBoardCard(cardObj.id, cardObj.num, e.clientX - 36, e.clientY - 52, false);
+            const pRect = playArea.getBoundingClientRect();
+
+            // สร้างการ์ดบนกระดานตามตำแหน่งเมาส์
+            const initialLeft = e.clientX - pRect.left - 36;
+            const initialTop = e.clientY - pRect.top - 52;
+
+            const cardEl = createBoardCard(cardObj.id, cardObj.num, initialLeft, initialTop, false);
             playArea.appendChild(cardEl);
 
             startDragging(e, cardEl);
@@ -867,12 +860,10 @@
             const handBox = document.getElementById('hand-zone').getBoundingClientRect();
             const hellBox = document.getElementById('my-hell-box').getBoundingClientRect();
             const banishBox = document.getElementById('my-banish-box').getBoundingClientRect();
-            const centerBox = document.getElementById('center-land-zone').getBoundingClientRect();
 
             document.getElementById('hand-zone').classList.toggle('drag-over', isInside(x, y, handBox));
             document.getElementById('my-hell-box').classList.toggle('drag-over', isInside(x, y, hellBox));
             document.getElementById('my-banish-box').classList.toggle('drag-over', isInside(x, y, banishBox));
-            document.getElementById('center-land-zone').classList.toggle('drag-over', isInside(x, y, centerBox));
         }
 
         function isInside(x, y, rect) {
@@ -886,9 +877,8 @@
             document.getElementById('hand-zone').classList.remove('drag-over');
             document.getElementById('my-hell-box').classList.remove('drag-over');
             document.getElementById('my-banish-box').classList.remove('drag-over');
-            document.getElementById('center-land-zone').classList.remove('drag-over');
 
-            // 1. ถ้าแค่คลิกเบาๆ = สลับ นอน ⇄ ตั้ง (Tap / Untap)
+            // 1. ถ้าคลิกสั้นๆ ไม่ได้ลาก = นอน ⇄ ตั้งการ์ด (Tap/Untap)
             if (!hasMoved) {
                 draggedEl.classList.toggle('tapped');
                 broadcastCardUpdate(draggedEl);
@@ -896,7 +886,7 @@
                 return;
             }
 
-            // 2. ดึงกลับเข้ามือ (ปล่อยบริเวณแถบมือ)
+            // 2. ดึงกลับเข้ามือ
             const handBox = document.getElementById('hand-zone').getBoundingClientRect();
             if (isInside(e.clientX, e.clientY, handBox) || e.clientY > window.innerHeight - 130) {
                 inGameHand.push({ id: draggedEl.id, num: draggedEl.dataset.cardNum });
@@ -929,39 +919,8 @@
                 return;
             }
 
-            // 5. คำนวณพิกัดสัมพัทธ์ในกรอบสนาม
-            const cardW = 72;
-            const cardH = 104;
-            const centerBox = document.getElementById('center-land-zone').getBoundingClientRect();
-            const myFieldBox = document.getElementById('my-battlefield').getBoundingClientRect();
-
-            let isLand = false;
-            let relX = 0.5, relY = 0.5;
-            let finalLeft = 0, finalTop = 0;
-
-            // ตรวจสอบว่าปล่อยในโซนเมืองตรงกลางหรือไม่
-            if (isInside(e.clientX, e.clientY, centerBox) || (Math.abs(e.clientX - (centerBox.left + centerBox.width/2)) < 70 && Math.abs(e.clientY - (centerBox.top + centerBox.height/2)) < 50)) {
-                isLand = true;
-                finalLeft = centerBox.left + (centerBox.width - cardW) / 2;
-                finalTop = centerBox.top + (centerBox.height - cardH) / 2;
-                draggedEl.classList.add('tapped'); // นอนการ์ดทันที
-            } else {
-                // ล็อคให้อยู่ในกรอบสนามเรา (#my-battlefield) เท่านั้น
-                let clampedX = Math.max(myFieldBox.left + 5, Math.min(myFieldBox.right - cardW - 5, e.clientX - cardW/2));
-                let clampedY = Math.max(myFieldBox.top + 5, Math.min(myFieldBox.bottom - cardH - 5, e.clientY - cardH/2));
-
-                finalLeft = clampedX;
-                finalTop = clampedY;
-
-                // คำนวณเป็นเปอร์เซ็นต์สัมพัทธ์ในกรอบ (0.0 ถึง 1.0)
-                relX = (finalLeft - myFieldBox.left) / (myFieldBox.width - cardW);
-                relY = (finalTop - myFieldBox.top) / (myFieldBox.height - cardH);
-            }
-
-            draggedEl.style.left = finalLeft + 'px';
-            draggedEl.style.top = finalTop + 'px';
-
-            broadcastCardUpdate(draggedEl, isLand, relX, relY);
+            // 5. วางอิสระ 100% ณ ตำแหน่งที่ผู้เล่นปล่อยมือ (ไม่มีการดูด ไม่มีการล็อคกรอบ)
+            broadcastCardUpdate(draggedEl);
             cleanupDragListeners();
         }
 
@@ -971,39 +930,45 @@
             draggedEl = null;
         }
 
-        function broadcastCardUpdate(el, isLand = false, rX = 0.5, rY = 0.5) {
+        // ส่งพิกัดจุดกึ่งกลางการ์ดเป็นเปอร์เซ็นต์ของสนาม เพื่อให้อีกฝ่ายสะท้อนกลับได้แม่นยำ
+        function broadcastCardUpdate(el) {
+            const playArea = document.getElementById('play-area');
+            const pRect = playArea.getBoundingClientRect();
+            const cardW = 72;
+            const cardH = 104;
+
+            const leftPx = parseFloat(el.style.left) || el.offsetLeft;
+            const topPx = parseFloat(el.style.top) || el.offsetTop;
+
+            const centerX = ((leftPx + cardW / 2) / pRect.width) * 100;
+            const centerY = ((topPx + cardH / 2) / pRect.height) * 100;
+
             sendNetwork('BOARD_CARD_UPDATE', {
                 id: el.id,
                 cardNum: el.dataset.cardNum,
-                isLand: isLand,
-                relX: rX,
-                relY: rY,
+                centerX: centerX,
+                centerY: centerY,
                 tapped: el.classList.contains('tapped')
             });
         }
 
-        // ฝั่งตรงข้ามรับข้อมูลและวาดลงในกรอบสนามบน (#opp-battlefield) แบบสมมาตรเป๊ะ
+        // หน้าจอคู่ต่อสู้สะท้อนพิกัดกลับด้าน 100 - X, 100 - Y อย่างสมบูรณ์
         function renderOpponentBoardCard(data) {
             let el = document.getElementById(data.id);
+            const playArea = document.getElementById('play-area');
+            const pRect = playArea.getBoundingClientRect();
             const cardW = 72;
             const cardH = 104;
-            const centerBox = document.getElementById('center-land-zone').getBoundingClientRect();
-            const oppFieldBox = document.getElementById('opp-battlefield').getBoundingClientRect();
 
-            let targetLeft = 0, targetTop = 0;
+            const oppCenterX = 100 - data.centerX;
+            const oppCenterY = 100 - data.centerY;
 
-            if (data.isLand) {
-                targetLeft = centerBox.left + (centerBox.width - cardW) / 2;
-                targetTop = centerBox.top + (centerBox.height - cardH) / 2;
-            } else {
-                // สมมาตรกลับด้านในกรอบสนามบน: (1 - relX), (1 - relY)
-                targetLeft = oppFieldBox.left + (1 - data.relX) * (oppFieldBox.width - cardW);
-                targetTop = oppFieldBox.top + (1 - data.relY) * (oppFieldBox.height - cardH);
-            }
+            const targetLeft = (oppCenterX / 100) * pRect.width - cardW / 2;
+            const targetTop = (oppCenterY / 100) * pRect.height - cardH / 2;
 
             if (!el) {
                 el = createBoardCard(data.id, data.cardNum, targetLeft, targetTop, true);
-                document.getElementById('play-area').appendChild(el);
+                playArea.appendChild(el);
             } else {
                 el.style.left = targetLeft + 'px';
                 el.style.top = targetTop + 'px';

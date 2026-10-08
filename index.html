@@ -108,19 +108,19 @@
         #screen-board { z-index: 100; position: relative; padding-top: 42px; box-sizing: border-box; background: radial-gradient(circle, #1a1c26 0%, #0d0e14 100%); }
         #play-area { position: absolute; width: 100%; height: calc(100vh - 42px); top: 42px; left: 0; z-index: 5; }
 
-        /* กรอบสนามไกด์ไลน์ (Pointer-events: none ไม่บังการวางการ์ด) */
+        /* กรอบสนามไกด์ไลน์ 2 ฝั่ง (จุดอ้างอิงพิกัด) */
         #arena-container {
             position: absolute;
             top: 42px;
             left: 50%;
             transform: translateX(-50%);
             width: 72vw;
-            height: calc(100vh - 42px - 140px);
+            height: calc(100vh - 42px - 145px);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
+            padding: 8px 0;
             box-sizing: border-box;
             z-index: 2;
             pointer-events: none;
@@ -128,7 +128,7 @@
 
         #opp-battlefield {
             width: 100%;
-            height: 42%;
+            height: 41%;
             background: var(--opp-zone);
             border: 2px dashed rgba(220, 53, 69, 0.4);
             border-radius: 12px;
@@ -146,8 +146,8 @@
         }
 
         #center-land-zone {
-            width: 140px;
-            height: 80px;
+            width: 130px;
+            height: 75px;
             background: var(--center-zone);
             border: 2px dashed rgba(255, 204, 0, 0.6);
             border-radius: 10px;
@@ -162,7 +162,7 @@
 
         #my-battlefield {
             width: 100%;
-            height: 42%;
+            height: 41%;
             background: var(--my-zone);
             border: 2px dashed rgba(0, 123, 255, 0.4);
             border-radius: 12px;
@@ -209,7 +209,7 @@
             height: 104px !important; 
         }
 
-        /* โซนการ์ดบนมือ: ขยายใหญ่ชัดเจน */
+        /* โซนการ์ดบนมือ */
         .hand-zone { 
             position: absolute; 
             display: flex; 
@@ -227,6 +227,7 @@
         .hand-zone.drag-over { background: rgba(40, 167, 69, 0.25); border-radius: 12px 12px 0 0; }
         .hand-zone.opponent { top: 42px; bottom: auto; height: 50px; pointer-events: none; }
         
+        /* การ์ดในมือผู้เล่น (105px x 150px) */
         .hand-zone:not(.opponent) > .card { 
             position: relative !important; 
             left: auto !important; 
@@ -258,17 +259,20 @@
         .deck-zone.opponent { top: 55px; left: 15px; cursor: default; }
 
         .life-zone { position: absolute; display: flex; flex-direction: column; gap: 6px; z-index: 40; }
-        .life-zone.my-side { bottom: 135px; left: 15px; }
+        .life-zone.my-side { bottom: 175px; left: 15px; }
         .life-zone.opponent { top: 170px; right: 15px; }
-        .life-card { width: 72px; height: 44px; background: linear-gradient(135deg, #a71d2a 0%, #5c0f16 100%); cursor: pointer; border: 2px solid #ff4d4d; border-radius: 5px; z-index: 40; transition: transform 0.2s; box-shadow: 2px 2px 8px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; text-shadow: 1px 1px 2px black; font-size: 11px; background-size: cover; background-position: center; }
+        .life-card { width: 72px; height: 44px; background: linear-gradient(135deg, #a71d2a 0%, #5c0f16 100%); cursor: pointer; border: 2px solid #ff4d4d; border-radius: 5px; z-index: 40; transition: transform 0.2s, border-color 0.2s; box-shadow: 2px 2px 8px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; text-shadow: 1px 1px 2px black; font-size: 11px; background-size: cover; background-position: center; }
         .life-card:hover { transform: scale(1.05) translateX(6px); }
+        .life-card.revealed { border-color: #ffcc00; box-shadow: 0 0 12px var(--primary); }
 
         .zone-box { position: absolute; background: rgba(25,27,36,0.95); color: white; border: 2px solid #555; border-radius: 8px; font-weight: bold; padding: 7px 12px; cursor: pointer; text-align: center; z-index: 40; backdrop-filter: blur(4px); font-size: 11px; transition: 0.2s; }
         .zone-box.drag-over { background: rgba(220, 53, 69, 0.6) !important; border-color: #ff4d4d !important; transform: scale(1.08); }
         .zone-box.opponent.hell { top: 55px; right: 15px; cursor: default; }
         .zone-box.opponent.banish { top: 100px; right: 15px; cursor: default; border-color: #6f42c1; }
+        .zone-box.opponent.life-trash { top: 115px; left: 15px; cursor: default; border-color: #ff4d4d; }
         .zone-box.my-side.hell { bottom: 135px; right: 15px; }
         .zone-box.my-side.banish { bottom: 180px; right: 15px; border-color: #6f42c1; }
+        .zone-box.my-side.life-trash { bottom: 125px; left: 15px; border-color: #ff4d4d; }
 
         .card-back { background: repeating-linear-gradient(45deg, #181920, #181920 10px, #262833 10px, #262833 20px) !important; border: 2px solid #555 !important; }
 
@@ -367,11 +371,13 @@
         <div id="opponent-deck" class="deck-zone opponent">OPPONENT<br>DECK (<span id="opp-deck-count">0</span>)</div>
         <div id="opponent-hand" class="hand-zone opponent"></div>
         <div id="opponent-life" class="life-zone opponent"></div>
+        <div class="zone-box opponent life-trash">สุสาน Life (<span id="opp-life-trash-count">0</span>)</div>
         <div class="zone-box opponent hell">นรก (<span id="opp-hell-count">0</span>)</div>
         <div class="zone-box opponent banish">มิติมืด (<span id="opp-banish-count">0</span>)</div>
         
         <!-- ฝั่งเรา -->
         <div id="life-zone" class="life-zone my-side"></div>
+        <div id="my-life-trash-box" class="zone-box my-side life-trash" onclick="openLifeTrashViewer()">สุสาน Life (<span id="my-life-trash-count">0</span>)</div>
         <div id="hand-zone" class="hand-zone my-side"></div>
         <div id="deck-zone" class="deck-zone my-side" onclick="drawCard(1)">DECK<br>(<span id="my-deck-count">0</span>)</div>
         <div id="my-hell-box" class="zone-box my-side hell" onclick="openZoneViewer('hell')">นรก (<span id="my-hell-count">0</span>)</div>
@@ -387,6 +393,17 @@
                 <button onclick="closeModal('selector-modal')" class="vtt-btn" style="padding:8px 16px; font-size:14px;">ปิดหน้าต่าง</button>
             </div>
             <div id="reveal-cards-container" class="reveal-grid"></div>
+        </div>
+    </div>
+
+    <!-- Modal ดูการ์ดในสุสาน Life (มีระบบชุบเลือด) -->
+    <div id="life-trash-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 style="color: #ff4d4d; margin-top:0;">สุสานไพ่ชีวิต (LIFE GRAVEYARD)</h2>
+            <div style="margin-bottom: 15px;">
+                <button onclick="closeModal('life-trash-modal')" class="vtt-btn" style="padding:6px 18px;">ปิด</button>
+            </div>
+            <div id="life-trash-cards-container" class="reveal-grid"></div>
         </div>
     </div>
 
@@ -414,6 +431,7 @@
         let inGameDeck = [];
         let inGameHand = [];
         let inGameLife = [];
+        let inGameLifeTrash = []; // สุสานไพ่ชีวิตแยกเฉพาะ
         let inGameHell = [];
         let inGameBanish = [];
 
@@ -667,7 +685,8 @@
             if (arrMainDeck.length === 0) return alert('กรุณาเลือกการ์ดใส่ Main Deck ก่อนครับ');
 
             inGameDeck = [...arrMainDeck];
-            inGameLife = arrLifeDeck.map(num => ({ num: num, revealed: false }));
+            inGameLife = arrLifeDeck.map(num => ({ id: 'life-' + Date.now() + '-' + Math.random().toString(36).substr(2,4), num: num, revealed: false }));
+            inGameLifeTrash = [];
             inGameHand = [];
             inGameHell = [];
             inGameBanish = [];
@@ -690,11 +709,13 @@
             document.getElementById('my-deck-count').innerText = inGameDeck.length;
             document.getElementById('my-hell-count').innerText = inGameHell.length;
             document.getElementById('my-banish-count').innerText = inGameBanish.length;
+            document.getElementById('my-life-trash-count').innerText = inGameLifeTrash.length;
 
             sendNetwork('SYNC_COUNTS', {
                 handCount: inGameHand.length,
                 deckCount: inGameDeck.length,
                 lifeDeck: inGameLife,
+                lifeTrashCount: inGameLifeTrash.length,
                 hellCount: inGameHell.length,
                 banishCount: inGameBanish.length
             });
@@ -704,6 +725,9 @@
             document.getElementById('opp-deck-count').innerText = payload.deckCount;
             document.getElementById('opp-hell-count').innerText = payload.hellCount;
             document.getElementById('opp-banish-count').innerText = payload.banishCount;
+            if (document.getElementById('opp-life-trash-count')) {
+                document.getElementById('opp-life-trash-count').innerText = payload.lifeTrashCount || 0;
+            }
 
             const oppHand = document.getElementById('opponent-hand');
             oppHand.innerHTML = '';
@@ -718,37 +742,41 @@
             if (payload.lifeDeck) {
                 payload.lifeDeck.forEach(lifeObj => {
                     const el = document.createElement('div');
-                    el.className = 'life-card' + (lifeObj.revealed ? '' : ' card-back');
+                    el.className = 'life-card' + (lifeObj.revealed ? ' revealed' : ' card-back');
                     if (lifeObj.revealed) el.style.backgroundImage = `url('cards/card (${lifeObj.num}).jpg')`;
                     oppLife.appendChild(el);
                 });
             }
         }
 
+        // --- ระบบ Life Card ใหม่ (คลิก 1 = หงายดูเอฟเฟกต์ / คลิก 2 = ทิ้งลงสุสาน Life) ---
         function renderMyBoard() {
             const lifeZone = document.getElementById('life-zone');
             lifeZone.innerHTML = '';
             inGameLife.forEach((lifeObj, idx) => {
                 const el = document.createElement('div');
-                el.className = 'life-card';
+                el.className = 'life-card' + (lifeObj.revealed ? ' revealed' : '');
+                
                 if (lifeObj.revealed) {
                     el.style.backgroundImage = `url('cards/card (${lifeObj.num}).jpg')`;
                     el.innerText = '';
                 } else {
+                    el.style.backgroundImage = 'none';
                     el.innerText = `LIFE #${idx + 1}`;
                 }
+
                 el.onclick = () => {
-                    inGameLife.splice(idx, 1);
-                    inGameHand.push({ id: 'c-' + Date.now(), num: lifeObj.num });
+                    if (!lifeObj.revealed) {
+                        // คลิกครั้งแรก: หงายขึ้นมาแสดงผลเอฟเฟกต์
+                        lifeObj.revealed = true;
+                    } else {
+                        // คลิกครั้งที่สอง: ทิ้งลงสุสาน Life
+                        inGameLifeTrash.push(inGameLife.splice(idx, 1)[0]);
+                    }
                     renderMyBoard();
                     syncAllCounts();
                 };
-                el.oncontextmenu = (e) => {
-                    e.preventDefault();
-                    lifeObj.revealed = !lifeObj.revealed;
-                    renderMyBoard();
-                    syncAllCounts();
-                };
+
                 lifeZone.appendChild(el);
             });
 
@@ -792,18 +820,17 @@
             sendNetwork('DICE_ROLL', { val: res });
         }
 
-        // --- ระบบ Drag & Drop อิสระ 100% ไม่ล็อค ไม่ดูดพิกัด ---
+        // --- ระบบ Drag & Drop อิสระ + คำนวณพิกัดสมมาตรผ่านกรอบสนามตรงกลาง (#arena-container) ---
         function startDragFromHand(e, cardObj, handIdx) {
             e.preventDefault();
             inGameHand.splice(handIdx, 1);
             renderHand();
 
             const playArea = document.getElementById('play-area');
-            const pRect = playArea.getBoundingClientRect();
+            const playAreaRect = playArea.getBoundingClientRect();
 
-            // สร้างการ์ดบนกระดานตามตำแหน่งเมาส์
-            const initialLeft = e.clientX - pRect.left - 36;
-            const initialTop = e.clientY - pRect.top - 52;
+            const initialLeft = e.clientX - playAreaRect.left - 36;
+            const initialTop = e.clientY - playAreaRect.top - 52;
 
             const cardEl = createBoardCard(cardObj.id, cardObj.num, initialLeft, initialTop, false);
             playArea.appendChild(cardEl);
@@ -878,7 +905,7 @@
             document.getElementById('my-hell-box').classList.remove('drag-over');
             document.getElementById('my-banish-box').classList.remove('drag-over');
 
-            // 1. ถ้าคลิกสั้นๆ ไม่ได้ลาก = นอน ⇄ ตั้งการ์ด (Tap/Untap)
+            // 1. ถ้าแค่คลิกเบาๆ = สลับ นอน ⇄ ตั้ง (Tap/Untap)
             if (!hasMoved) {
                 draggedEl.classList.toggle('tapped');
                 broadcastCardUpdate(draggedEl);
@@ -919,7 +946,7 @@
                 return;
             }
 
-            // 5. วางอิสระ 100% ณ ตำแหน่งที่ผู้เล่นปล่อยมือ (ไม่มีการดูด ไม่มีการล็อคกรอบ)
+            // 5. วางอิสระบนสนาม
             broadcastCardUpdate(draggedEl);
             cleanupDragListeners();
         }
@@ -930,45 +957,44 @@
             draggedEl = null;
         }
 
-        // ส่งพิกัดจุดกึ่งกลางการ์ดเป็นเปอร์เซ็นต์ของสนาม เพื่อให้อีกฝ่ายสะท้อนกลับได้แม่นยำ
+        // คำนวณพิกัดสัมพัทธ์เทียบกับ #arena-container (จุดอ้างอิงกลางสนาม)
         function broadcastCardUpdate(el) {
-            const playArea = document.getElementById('play-area');
-            const pRect = playArea.getBoundingClientRect();
-            const cardW = 72;
-            const cardH = 104;
+            const arenaRect = document.getElementById('arena-container').getBoundingClientRect();
+            const cardRect = el.getBoundingClientRect();
 
-            const leftPx = parseFloat(el.style.left) || el.offsetLeft;
-            const topPx = parseFloat(el.style.top) || el.offsetTop;
+            const cardCenterX = cardRect.left + cardRect.width / 2;
+            const cardCenterY = cardRect.top + cardRect.height / 2;
 
-            const centerX = ((leftPx + cardW / 2) / pRect.width) * 100;
-            const centerY = ((topPx + cardH / 2) / pRect.height) * 100;
+            const relX = (cardCenterX - arenaRect.left) / arenaRect.width;
+            const relY = (cardCenterY - arenaRect.top) / arenaRect.height;
 
             sendNetwork('BOARD_CARD_UPDATE', {
                 id: el.id,
                 cardNum: el.dataset.cardNum,
-                centerX: centerX,
-                centerY: centerY,
+                relX: relX,
+                relY: relY,
                 tapped: el.classList.contains('tapped')
             });
         }
 
-        // หน้าจอคู่ต่อสู้สะท้อนพิกัดกลับด้าน 100 - X, 100 - Y อย่างสมบูรณ์
+        // หน้าจอคู่ต่อสู้สะท้อนกลับด้านสมบูรณ์ 100% ไม่ล้ำเส้น
         function renderOpponentBoardCard(data) {
             let el = document.getElementById(data.id);
-            const playArea = document.getElementById('play-area');
-            const pRect = playArea.getBoundingClientRect();
+            const arenaRect = document.getElementById('arena-container').getBoundingClientRect();
+            const playAreaRect = document.getElementById('play-area').getBoundingClientRect();
             const cardW = 72;
             const cardH = 104;
 
-            const oppCenterX = 100 - data.centerX;
-            const oppCenterY = 100 - data.centerY;
+            // กลับด้านสัมพัทธ์ในกรอบสนาม: 1 - X, 1 - Y
+            const oppCenterX = (1 - data.relX) * arenaRect.width + arenaRect.left;
+            const oppCenterY = (1 - data.relY) * arenaRect.height + arenaRect.top;
 
-            const targetLeft = (oppCenterX / 100) * pRect.width - cardW / 2;
-            const targetTop = (oppCenterY / 100) * pRect.height - cardH / 2;
+            const targetLeft = (oppCenterX - playAreaRect.left) - cardW / 2;
+            const targetTop = (oppCenterY - playAreaRect.top) - cardH / 2;
 
             if (!el) {
                 el = createBoardCard(data.id, data.cardNum, targetLeft, targetTop, true);
-                playArea.appendChild(el);
+                document.getElementById('play-area').appendChild(el);
             } else {
                 el.style.left = targetLeft + 'px';
                 el.style.top = targetTop + 'px';
@@ -1033,6 +1059,60 @@
             }
             renderRevealedCards();
             syncAllCounts();
+        }
+
+        // --- ระบบสุสาน Life & การชุบชีวิต ---
+        function openLifeTrashViewer() {
+            const container = document.getElementById('life-trash-cards-container');
+            container.innerHTML = '';
+
+            inGameLifeTrash.forEach((lifeObj, idx) => {
+                const box = document.createElement('div');
+                box.className = 'reveal-card-box';
+
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card';
+                cardEl.style.position = 'relative';
+                cardEl.style.backgroundImage = `url('cards/card (${lifeObj.num}).jpg')`;
+
+                const btns = document.createElement('div');
+                btns.className = 'reveal-btns';
+                btns.innerHTML = `
+                    <button class="btn-act to-bot" onclick="reviveLifeCard(${idx})">ชุบเป็น Life</button>
+                    <button class="btn-act to-hand" onclick="retrieveLifeToHand(${idx})">ดึงขึ้นมือ</button>
+                    <button class="btn-act to-hell" onclick="sendLifeToHell(${idx})">ส่งลงนรก</button>
+                `;
+
+                box.appendChild(cardEl);
+                box.appendChild(btns);
+                container.appendChild(box);
+            });
+
+            document.getElementById('life-trash-modal').classList.remove('hidden');
+        }
+
+        function reviveLifeCard(idx) {
+            const lifeObj = inGameLifeTrash.splice(idx, 1)[0];
+            lifeObj.revealed = false; // ชุบกลับเป็นสภาพคว่ำ
+            inGameLife.push(lifeObj);
+            renderMyBoard();
+            syncAllCounts();
+            openLifeTrashViewer();
+        }
+
+        function retrieveLifeToHand(idx) {
+            const lifeObj = inGameLifeTrash.splice(idx, 1)[0];
+            inGameHand.push({ id: 'c-' + Date.now(), num: lifeObj.num });
+            renderHand();
+            syncAllCounts();
+            openLifeTrashViewer();
+        }
+
+        function sendLifeToHell(idx) {
+            const lifeObj = inGameLifeTrash.splice(idx, 1)[0];
+            inGameHell.push(lifeObj.num);
+            syncAllCounts();
+            openLifeTrashViewer();
         }
 
         // --- ดูการ์ดใน นรก / มิติมืด ---

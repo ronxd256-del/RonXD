@@ -9,8 +9,11 @@
     <style>
         :root {
             --primary: #ffcc00;
-            --bg-dark: #111;
-            --panel-bg: rgba(20, 20, 25, 0.95);
+            --bg-dark: #121318;
+            --panel-bg: rgba(20, 22, 30, 0.95);
+            --my-zone: rgba(0, 123, 255, 0.15);
+            --opp-zone: rgba(220, 53, 69, 0.15);
+            --center-zone: rgba(255, 204, 0, 0.2);
         }
         body, html { margin: 0; padding: 0; overflow: hidden; background: var(--bg-dark); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; }
         .hidden { display: none !important; }
@@ -21,9 +24,9 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 40px;
-            background: rgba(15, 15, 20, 0.95);
-            border-bottom: 1px solid #444;
+            height: 42px;
+            background: rgba(15, 15, 22, 0.98);
+            border-bottom: 1px solid #333;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -34,36 +37,34 @@
         }
         .tool-group { display: flex; align-items: center; gap: 8px; }
         .vtt-btn {
-            background: #2a2a35;
+            background: #252836;
             color: #fff;
-            border: 1px solid #555;
+            border: 1px solid #4f5366;
             border-radius: 5px;
-            padding: 5px 10px;
+            padding: 6px 12px;
             font-size: 12px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.2s;
         }
-        .vtt-btn:hover { background: #444; border-color: var(--primary); color: var(--primary); }
+        .vtt-btn:hover { background: #3b3f54; border-color: var(--primary); color: var(--primary); }
 
         .screen { position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; display: flex; flex-direction: column; }
         
         /* 1. หน้าเลือกฝั่ง */
-        #screen-side { justify-content: center; align-items: center; background: radial-gradient(circle, #333 0%, #000 100%); z-index: 300; }
+        #screen-side { justify-content: center; align-items: center; background: radial-gradient(circle, #252836 0%, #0d0e12 100%); z-index: 300; }
         .game-title { font-size: 3.5rem; color: var(--primary); text-transform: uppercase; text-shadow: 0 0 20px rgba(255, 204, 0, 0.5); margin-bottom: 25px; }
         .room-box { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 25px; }
         .room-input { padding: 10px 18px; font-size: 18px; border-radius: 8px; border: 2px solid #555; background: #222; color: white; text-align: center; width: 240px; outline: none; }
         .room-input:focus { border-color: var(--primary); }
         .side-btn-container { display: flex; gap: 20px; }
-        .btn-side { padding: 16px 32px; font-size: 20px; font-weight: bold; cursor: pointer; background: #222; color: white; border: 2px solid #555; border-radius: 12px; transition: 0.25s; text-transform: uppercase; }
+        .btn-side { padding: 16px 36px; font-size: 20px; font-weight: bold; cursor: pointer; background: #222; color: white; border: 2px solid #555; border-radius: 12px; transition: 0.25s; text-transform: uppercase; }
         .btn-side:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .btn-side.a:hover { border-color: #007bff; color: #007bff; box-shadow: 0 0 20px rgba(0, 123, 255, 0.5); }
         .btn-side.b:hover { border-color: #dc3545; color: #dc3545; box-shadow: 0 0 20px rgba(220, 53, 69, 0.5); }
 
         /* 2. หน้าจัดเด็ค */
-        #screen-builder { background: url('board-bg.png.jpg') center/cover; flex-direction: row; z-index: 200; padding-top: 40px; box-sizing: border-box; }
-        .builder-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); z-index: -1; }
-        
+        #screen-builder { background: #161822; flex-direction: row; z-index: 200; padding-top: 42px; box-sizing: border-box; }
         .pool-panel { width: 380px; background: var(--panel-bg); border-right: 2px solid #333; display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; }
         .pool-panel h2 { margin: 0 0 8px 0; color: var(--primary); font-size: 20px; text-align: center; }
         .pool-settings { margin-bottom: 10px; font-size: 12px; color: #aaa; text-align: center; background: #222; padding: 8px; border-radius: 6px; border: 1px solid #444; }
@@ -86,12 +87,12 @@
         .add-btns div { flex: 1; text-align: center; padding: 6px 0; font-size: 11px; font-weight: bold; border: 1px solid #555; }
         .add-btns div:hover { background: #777; color: var(--primary); }
 
-        .deck-panel { flex-grow: 1; display: flex; flex-direction: column; padding: 15px 20px; box-sizing: border-box; gap: 12px; height: calc(100vh - 40px); overflow: hidden; }
-        .deck-section { background: rgba(0,0,0,0.7); border: 2px solid #444; border-radius: 12px; padding: 12px 15px; display: flex; flex-direction: column; position: relative; }
+        .deck-panel { flex-grow: 1; display: flex; flex-direction: column; padding: 15px 20px; box-sizing: border-box; gap: 12px; height: calc(100vh - 42px); overflow: hidden; }
+        .deck-section { background: rgba(0,0,0,0.6); border: 2px solid #333; border-radius: 12px; padding: 12px 15px; display: flex; flex-direction: column; position: relative; }
         .deck-section.top { height: 58%; }
         .deck-section.bottom { height: 38%; border-color: #a71d2a; }
         
-        .deck-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #555; padding-bottom: 6px; margin-bottom: 8px; flex-shrink: 0; }
+        .deck-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #444; padding-bottom: 6px; margin-bottom: 8px; flex-shrink: 0; }
         .deck-header h3 { margin: 0; font-size: 18px; color: #fff; }
         .deck-header .count { font-size: 20px; font-weight: bold; color: var(--primary); }
         
@@ -103,17 +104,99 @@
         .btn-start { padding: 12px 35px; font-size: 18px; font-weight: bold; background: #28a745; color: white; border: 2px solid white; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .btn-start:hover { background: #218838; transform: scale(1.04); }
 
-        /* 3. หน้ากระดานเกม (VTT Board) */
-        #screen-board { z-index: 100; position: relative; padding-top: 40px; box-sizing: border-box; }
-        #background-layer { position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; background-image: url('board-bg.png.jpg'); background-size: cover; background-position: center; z-index: 1; }
-        #play-area { position: absolute; width: 100%; height: calc(100vh - 40px); top: 40px; left: 0; z-index: 5; }
+        /* 3. สนามแข่งใหม่ (Symmetrical Digital Arena) */
+        #screen-board { z-index: 100; position: relative; padding-top: 42px; box-sizing: border-box; background: radial-gradient(circle, #1a1c26 0%, #0d0e14 100%); }
+        #play-area { position: absolute; width: 100%; height: calc(100vh - 42px); top: 42px; left: 0; z-index: 5; pointer-events: none; }
 
-        /* ขนาดการ์ดบนกระดาน: 76px x 110px */
+        /* กรอบสนามหลักตรงกลาง แบ่ง 2 ฝั่งเท่ากันเป๊ะ */
+        #arena-container {
+            position: absolute;
+            top: 42px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 72vw;
+            height: calc(100vh - 42px - 140px); /* เว้นพื้นที่ให้การ์ดในมือด้านล่าง */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            box-sizing: border-box;
+            z-index: 2;
+        }
+
+        /* สนามฝั่งคู่ต่อสู้ (บน) */
+        #opp-battlefield {
+            width: 100%;
+            height: 42%;
+            background: var(--opp-zone);
+            border: 2px dashed rgba(220, 53, 69, 0.4);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(220, 53, 69, 0.1);
+        }
+        #opp-battlefield::after {
+            content: 'สนามฝ่ายตรงข้าม (OPPONENT FIELD)';
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: rgba(220, 53, 69, 0.6);
+            letter-spacing: 1px;
+        }
+
+        /* โซนเมืองตรงกลาง (Land Magic Zone) */
+        #center-land-zone {
+            width: 140px;
+            height: 80px;
+            background: var(--center-zone);
+            border: 2px dashed rgba(255, 204, 0, 0.7);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
+            transition: 0.2s;
+        }
+        #center-land-zone.drag-over {
+            background: rgba(255, 204, 0, 0.5);
+            transform: scale(1.06);
+            box-shadow: 0 0 25px rgba(255, 204, 0, 0.6);
+        }
+
+        /* สนามฝั่งเรา (ล่าง) */
+        #my-battlefield {
+            width: 100%;
+            height: 42%;
+            background: var(--my-zone);
+            border: 2px dashed rgba(0, 123, 255, 0.5);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0, 123, 255, 0.15);
+        }
+        #my-battlefield::after {
+            content: 'สนามของเรา (PLAYER FIELD)';
+            position: absolute;
+            bottom: 8px;
+            left: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: rgba(0, 123, 255, 0.7);
+            letter-spacing: 1px;
+        }
+
+        /* การ์ดบนสนาม: 72px x 104px */
         .card { 
-            width: 76px; 
-            height: 110px; 
+            width: 72px; 
+            height: 104px; 
             background: #222; 
-            border: 2px solid #111; 
+            border: 2px solid #222; 
             border-radius: 6px; 
             background-size: cover; 
             background-position: center; 
@@ -122,41 +205,52 @@
             z-index: 10; 
             transition: box-shadow 0.15s, transform 0.2s; 
             box-shadow: 2px 2px 8px rgba(0,0,0,0.8); 
+            pointer-events: auto;
         }
         .card:hover { box-shadow: 0 0 12px var(--primary); z-index: 30; }
         
-        /* สภาพนอน (Tap) */
         .card.tapped { transform: rotate(90deg) !important; }
-        
-        /* การ์ดฝ่ายตรงข้าม: หันหัวกลับลงมาหาเรา */
         .card.is-opponent { transform: rotate(180deg); border-color: #dc3545; }
         .card.is-opponent.tapped { transform: rotate(270deg) !important; }
 
-        /* การ์ดขณะกำลังลาก */
         .card.dragging { 
             cursor: grabbing; 
             z-index: 1000 !important; 
             transition: none !important; 
-            width: 76px !important; 
-            height: 110px !important; 
+            width: 72px !important; 
+            height: 104px !important; 
         }
 
-        /* มือผู้เล่น: การ์ดใหญ่ชัดเจน (105px x 152px) */
-        .hand-zone { position: absolute; display: flex; align-items: flex-end; justify-content: center; height: 160px; width: 70%; z-index: 50; bottom: 0; left: 50%; transform: translateX(-50%); transition: background 0.2s; }
+        /* โซนการ์ดบนมือ: ขยายใหญ่ชัดเจน */
+        .hand-zone { 
+            position: absolute; 
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: center; 
+            height: 135px; 
+            width: 70%; 
+            z-index: 50; 
+            bottom: 0; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            transition: background 0.2s; 
+            pointer-events: auto;
+        }
         .hand-zone.drag-over { background: rgba(40, 167, 69, 0.25); border-radius: 12px 12px 0 0; }
-        .hand-zone.opponent { top: 40px; bottom: auto; pointer-events: none; }
+        .hand-zone.opponent { top: 42px; bottom: auto; height: 50px; pointer-events: none; }
         
+        /* การ์ดในมือผู้เล่น (105px x 150px) */
         .hand-zone:not(.opponent) > .card { 
             position: relative !important; 
             left: auto !important; 
             top: auto !important; 
             width: 105px !important; 
-            height: 152px !important; 
-            margin: 0 -20px; 
+            height: 150px !important; 
+            margin: 0 -18px; 
             transition: transform 0.2s, margin 0.2s; 
         }
         .hand-zone:not(.opponent) > .card:hover { 
-            transform: translateY(-35px) scale(1.15); 
+            transform: translateY(-30px) scale(1.15); 
             z-index: 40; 
             margin: 0 14px; 
         }
@@ -165,36 +259,38 @@
             position: relative !important;
             left: auto !important;
             top: auto !important;
-            margin: 0 -22px;
+            width: 60px !important;
+            height: 85px !important;
+            margin: 0 -20px;
         }
 
-        /* โซนคงที่บนบอร์ด */
-        .deck-zone { position: absolute; width: 76px; height: 110px; background: rgba(20,20,20,0.9); border: 2px solid #888; border-radius: 8px; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; text-align: center; z-index: 40; transition: 0.2s; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); font-size: 11px; }
+        /* โซนด้านข้าง (Deck, Life, Hell, Banish) */
+        .deck-zone { position: absolute; width: 72px; height: 104px; background: rgba(25,27,36,0.9); border: 2px solid #555; border-radius: 8px; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; text-align: center; z-index: 40; transition: 0.2s; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); font-size: 11px; }
         .deck-zone:hover { transform: scale(1.04); border-color: var(--primary); color: var(--primary); }
-        .deck-zone.my-side { bottom: 20px; right: 20px; }
-        .deck-zone.opponent { top: 60px; left: 20px; cursor: default; }
+        .deck-zone.my-side { bottom: 15px; right: 15px; }
+        .deck-zone.opponent { top: 55px; left: 15px; cursor: default; }
 
         .life-zone { position: absolute; display: flex; flex-direction: column; gap: 6px; z-index: 40; }
-        .life-zone.my-side { bottom: 150px; left: 20px; }
-        .life-zone.opponent { top: 190px; right: 20px; }
-        .life-card { width: 76px; height: 46px; background: linear-gradient(135deg, #a71d2a 0%, #5c0f16 100%); cursor: pointer; border: 2px solid #ff4d4d; border-radius: 5px; z-index: 40; transition: transform 0.2s; box-shadow: 2px 2px 8px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; text-shadow: 1px 1px 2px black; font-size: 11px; background-size: cover; background-position: center; }
+        .life-zone.my-side { bottom: 135px; left: 15px; }
+        .life-zone.opponent { top: 170px; right: 15px; }
+        .life-card { width: 72px; height: 44px; background: linear-gradient(135deg, #a71d2a 0%, #5c0f16 100%); cursor: pointer; border: 2px solid #ff4d4d; border-radius: 5px; z-index: 40; transition: transform 0.2s; box-shadow: 2px 2px 8px rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; text-shadow: 1px 1px 2px black; font-size: 11px; background-size: cover; background-position: center; }
         .life-card:hover { transform: scale(1.05) translateX(6px); }
 
-        .zone-box { position: absolute; background: rgba(0,0,0,0.85); color: white; border: 2px solid #555; border-radius: 8px; font-weight: bold; padding: 7px 12px; cursor: pointer; text-align: center; z-index: 40; backdrop-filter: blur(4px); font-size: 11px; transition: 0.2s; }
+        .zone-box { position: absolute; background: rgba(25,27,36,0.95); color: white; border: 2px solid #555; border-radius: 8px; font-weight: bold; padding: 7px 12px; cursor: pointer; text-align: center; z-index: 40; backdrop-filter: blur(4px); font-size: 11px; transition: 0.2s; }
         .zone-box.drag-over { background: rgba(220, 53, 69, 0.6) !important; border-color: #ff4d4d !important; transform: scale(1.08); }
-        .zone-box.opponent.hell { top: 60px; right: 20px; cursor: default; }
-        .zone-box.opponent.banish { top: 105px; right: 20px; cursor: default; border-color: #6f42c1; }
-        .zone-box.my-side.hell { bottom: 150px; right: 20px; }
-        .zone-box.my-side.banish { bottom: 195px; right: 20px; border-color: #6f42c1; }
+        .zone-box.opponent.hell { top: 55px; right: 15px; cursor: default; }
+        .zone-box.opponent.banish { top: 100px; right: 15px; cursor: default; border-color: #6f42c1; }
+        .zone-box.my-side.hell { bottom: 135px; right: 15px; }
+        .zone-box.my-side.banish { bottom: 180px; right: 15px; border-color: #6f42c1; }
 
-        .card-back { background: repeating-linear-gradient(45deg, #111, #111 10px, #222 10px, #222 20px) !important; border: 2px solid #555 !important; }
+        .card-back { background: repeating-linear-gradient(45deg, #181920, #181920 10px, #262833 10px, #262833 20px) !important; border: 2px solid #555 !important; }
 
-        /* Modal หน้าต่างเปิดเลือกการ์ด */
+        /* Modals */
         .modal { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 4000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
-        .modal-content { background: var(--panel-bg); padding: 25px; border: 2px solid #555; border-radius: 12px; width: 85%; max-height: 85%; overflow-y: auto; text-align: center; }
+        .modal-content { background: var(--panel-bg); padding: 25px; border: 2px solid #444; border-radius: 12px; width: 85%; max-height: 85%; overflow-y: auto; text-align: center; }
         .reveal-grid { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 15px; }
         .reveal-card-box { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-        .reveal-btns { display: flex; flex-direction: column; gap: 4px; width: 76px; }
+        .reveal-btns { display: flex; flex-direction: column; gap: 4px; width: 72px; }
         .btn-act { padding: 4px 0; font-size: 10px; font-weight: bold; border-radius: 4px; border: none; cursor: pointer; color: white; transition: 0.15s; }
         .btn-act.to-hand { background: #28a745; }
         .btn-act.to-hand:hover { background: #218838; }
@@ -238,10 +334,9 @@
 
     <!-- 2. หน้าจัดเด็ค -->
     <div id="screen-builder" class="screen hidden">
-        <div class="builder-overlay"></div>
         <div class="pool-panel">
             <h2>คลังการ์ดทั้งหมด</h2>
-            <div class="pool-settings" id="pool-info">กำลังตรวจนับการ์ดที่มีอยู่ในโฟลเดอร์...</div>
+            <div class="pool-settings" id="pool-info">กำลังตรวจนับการ์ดในโฟลเดอร์...</div>
             <div id="card-pool" class="card-pool"></div>
         </div>
 
@@ -270,9 +365,15 @@
         </div>
     </div>
 
-    <!-- 3. หน้ากระดานเกม (VTT Board) -->
+    <!-- 3. หน้ากระดานเกม (Digital Arena) -->
     <div id="screen-board" class="screen hidden">
-        <div id="background-layer"></div> 
+        <!-- กรอบสนาม 2 ฝั่งแบ่งเท่ากันเป๊ะ -->
+        <div id="arena-container">
+            <div id="opp-battlefield"></div>
+            <div id="center-land-zone">โซนเมือง<br>(LAND MAGIC)</div>
+            <div id="my-battlefield"></div>
+        </div>
+
         <div id="play-area"></div>
         
         <!-- ฝั่งตรงข้าม -->
@@ -331,12 +432,10 @@
 
         let revealedCards = [];
 
-        // PeerJS P2P
         let peer = null;
         let conn = null;
         let connectTimer = null;
 
-        // ตัวแปรลากวาง
         let draggedEl = null;
         let dragStartX = 0, dragStartY = 0;
         let initialCardLeft = 0, initialCardTop = 0;
@@ -347,16 +446,13 @@
             if (savedRoom) document.getElementById('room-id').value = savedRoom;
         };
 
-        // เซฟ & โหลดเด็คแยกตามฝั่ง A และ B
         function saveDeckToStorage(side) {
-            const key = `tlc_saved_deck_${side}`;
-            localStorage.setItem(key, JSON.stringify({ main: arrMainDeck, life: arrLifeDeck }));
+            localStorage.setItem(`tlc_saved_deck_${side}`, JSON.stringify({ main: arrMainDeck, life: arrLifeDeck }));
         }
 
         function loadDeckFromStorage(side) {
             try {
-                const key = `tlc_saved_deck_${side}`;
-                const data = localStorage.getItem(key);
+                const data = localStorage.getItem(`tlc_saved_deck_${side}`);
                 if (data) {
                     const parsed = JSON.parse(data);
                     arrMainDeck = Array.isArray(parsed.main) ? parsed.main : [];
@@ -382,7 +478,6 @@
             el.style.color = color;
         }
 
-        // --- 1. สแกนเฉพาะการ์ดที่มีอยู่จริงในโฟลเดอร์ cards/ ---
         function checkExistingCards(callback) {
             if (validCards.length > 0) return callback();
             let checked = 0;
@@ -406,7 +501,7 @@
         function buildCardPool() {
             const pool = document.getElementById('card-pool');
             pool.innerHTML = '';
-            document.getElementById('pool-info').innerText = `พบการ์ดที่ใช้งานได้ทั้งหมด ${validCards.length} ใบ`;
+            document.getElementById('pool-info').innerText = `พบการ์ดใช้งานได้ ${validCards.length} ใบ`;
             validCards.forEach(i => {
                 const card = document.createElement('div');
                 card.className = 'pool-card-item';
@@ -422,7 +517,6 @@
             });
         }
 
-        // --- 2. การเชื่อมต่อออนไลน์ P2P ---
         function selectSide(side) {
             mySide = side;
             currentRoomId = document.getElementById('room-id').value.trim() || 'talingchan-vtt';
@@ -432,9 +526,7 @@
             document.getElementById('nav-side').innerText = 'ฝ่าย ' + side;
             document.getElementById('nav-side').style.color = side === 'A' ? '#007bff' : '#dc3545';
 
-            // โหลดเด็คเฉพาะของฝั่งที่เลือก (A หรือ B)
             loadDeckFromStorage(mySide);
-
             switchScreen('screen-side', 'screen-builder');
             
             checkExistingCards(() => {
@@ -517,7 +609,6 @@
             }
         }
 
-        // --- 3. หน้าจัดเด็ค ---
         function addToDeck(cardNum, type) {
             if (type === 'main') {
                 if (arrMainDeck.length >= 50) return alert('Main Deck สูงสุด 50 ใบ');
@@ -585,7 +676,6 @@
             });
         }
 
-        // --- 4. เข้าสู่สนามรบ ---
         function startGame() {
             if (arrMainDeck.length === 0) return alert('กรุณาเลือกการ์ดใส่ Main Deck ก่อนครับ');
 
@@ -715,14 +805,14 @@
             sendNetwork('DICE_ROLL', { val: res });
         }
 
-        // --- 5. ระบบคำนวณตำแหน่ง & ขอบเขตสนามแบบเป๊ะตามรูป 37, 38, 39 ---
+        // --- ระบบ Drag & Drop ล็อคเข้ากรอบสนามแบบสมบูรณ์ 100% ---
         function startDragFromHand(e, cardObj, handIdx) {
             e.preventDefault();
             inGameHand.splice(handIdx, 1);
             renderHand();
 
             const playArea = document.getElementById('play-area');
-            const cardEl = createBoardCard(cardObj.id, cardObj.num, e.clientX - 38, e.clientY - 55, false);
+            const cardEl = createBoardCard(cardObj.id, cardObj.num, e.clientX - 36, e.clientY - 52, false);
             playArea.appendChild(cardEl);
 
             startDragging(e, cardEl);
@@ -777,10 +867,12 @@
             const handBox = document.getElementById('hand-zone').getBoundingClientRect();
             const hellBox = document.getElementById('my-hell-box').getBoundingClientRect();
             const banishBox = document.getElementById('my-banish-box').getBoundingClientRect();
+            const centerBox = document.getElementById('center-land-zone').getBoundingClientRect();
 
             document.getElementById('hand-zone').classList.toggle('drag-over', isInside(x, y, handBox));
             document.getElementById('my-hell-box').classList.toggle('drag-over', isInside(x, y, hellBox));
             document.getElementById('my-banish-box').classList.toggle('drag-over', isInside(x, y, banishBox));
+            document.getElementById('center-land-zone').classList.toggle('drag-over', isInside(x, y, centerBox));
         }
 
         function isInside(x, y, rect) {
@@ -794,8 +886,9 @@
             document.getElementById('hand-zone').classList.remove('drag-over');
             document.getElementById('my-hell-box').classList.remove('drag-over');
             document.getElementById('my-banish-box').classList.remove('drag-over');
+            document.getElementById('center-land-zone').classList.remove('drag-over');
 
-            // 1. ถ้าแค่คลิกเบาๆ ไม่ได้ลาก = นอน ⇄ ตั้งการ์ด (Tap/Untap)
+            // 1. ถ้าแค่คลิกเบาๆ = สลับ นอน ⇄ ตั้ง (Tap / Untap)
             if (!hasMoved) {
                 draggedEl.classList.toggle('tapped');
                 broadcastCardUpdate(draggedEl);
@@ -803,7 +896,7 @@
                 return;
             }
 
-            // 2. ดึงกลับเข้ามือ
+            // 2. ดึงกลับเข้ามือ (ปล่อยบริเวณแถบมือ)
             const handBox = document.getElementById('hand-zone').getBoundingClientRect();
             if (isInside(e.clientX, e.clientY, handBox) || e.clientY > window.innerHeight - 130) {
                 inGameHand.push({ id: draggedEl.id, num: draggedEl.dataset.cardNum });
@@ -836,33 +929,39 @@
                 return;
             }
 
-            // 5. คำนวณพิกัดบนสนาม (ล็อคกรอบล่างเป๊ะ & โซนเมืองตรงกลาง)
-            const cardW = 76;
-            const cardH = 110;
-            let centerXPercent = ((e.clientX) / window.innerWidth) * 100;
-            let centerYPercent = ((e.clientY) / window.innerHeight) * 100;
+            // 5. คำนวณพิกัดสัมพัทธ์ในกรอบสนาม
+            const cardW = 72;
+            const cardH = 104;
+            const centerBox = document.getElementById('center-land-zone').getBoundingClientRect();
+            const myFieldBox = document.getElementById('my-battlefield').getBoundingClientRect();
 
-            // ตรวจสอบโซนเมืองตรงกลาง (Land Magic Zone: X 35%-65%, Y 44%-54%)
-            if (centerXPercent >= 35 && centerXPercent <= 65 && centerYPercent >= 44 && centerYPercent <= 54) {
-                // ล็อคตรงกลางเป๊ะ & นอนการ์ด (90deg) อัตโนมัติ
-                centerXPercent = 50;
-                centerYPercent = 49.5;
-                draggedEl.classList.add('tapped');
+            let isLand = false;
+            let relX = 0.5, relY = 0.5;
+            let finalLeft = 0, finalTop = 0;
+
+            // ตรวจสอบว่าปล่อยในโซนเมืองตรงกลางหรือไม่
+            if (isInside(e.clientX, e.clientY, centerBox) || (Math.abs(e.clientX - (centerBox.left + centerBox.width/2)) < 70 && Math.abs(e.clientY - (centerBox.top + centerBox.height/2)) < 50)) {
+                isLand = true;
+                finalLeft = centerBox.left + (centerBox.width - cardW) / 2;
+                finalTop = centerBox.top + (centerBox.height - cardH) / 2;
+                draggedEl.classList.add('tapped'); // นอนการ์ดทันที
             } else {
-                // กรอบสี่เหลี่ยมสีชมพูล่าง (Field A):
-                // แนวนอน X: 26% ถึง 74% (ไม่ล้นขอบถนน)
-                // แนวตั้ง Y: 56% ถึง 75% (ใต้กล่องเมืองตรงกลาง และเหนือเส้นขาวล่างเป๊ะ)
-                centerXPercent = Math.max(26, Math.min(74, centerXPercent));
-                centerYPercent = Math.max(56, Math.min(75, centerYPercent));
-            }
+                // ล็อคให้อยู่ในกรอบสนามเรา (#my-battlefield) เท่านั้น
+                let clampedX = Math.max(myFieldBox.left + 5, Math.min(myFieldBox.right - cardW - 5, e.clientX - cardW/2));
+                let clampedY = Math.max(myFieldBox.top + 5, Math.min(myFieldBox.bottom - cardH - 5, e.clientY - cardH/2));
 
-            const finalLeft = (centerXPercent * window.innerWidth / 100) - (cardW / 2);
-            const finalTop = (centerYPercent * window.innerHeight / 100) - (cardH / 2);
+                finalLeft = clampedX;
+                finalTop = clampedY;
+
+                // คำนวณเป็นเปอร์เซ็นต์สัมพัทธ์ในกรอบ (0.0 ถึง 1.0)
+                relX = (finalLeft - myFieldBox.left) / (myFieldBox.width - cardW);
+                relY = (finalTop - myFieldBox.top) / (myFieldBox.height - cardH);
+            }
 
             draggedEl.style.left = finalLeft + 'px';
             draggedEl.style.top = finalTop + 'px';
 
-            broadcastCardUpdate(draggedEl, centerXPercent, centerYPercent);
+            broadcastCardUpdate(draggedEl, isLand, relX, relY);
             cleanupDragListeners();
         }
 
@@ -872,35 +971,35 @@
             draggedEl = null;
         }
 
-        function broadcastCardUpdate(el, cX, cY) {
-            const cardW = 76;
-            const cardH = 110;
-            const left = parseFloat(el.style.left) || el.offsetLeft;
-            const top = parseFloat(el.style.top) || el.offsetTop;
-
-            const finalCenterX = cX !== undefined ? cX : (((left + cardW/2) / window.innerWidth) * 100);
-            const finalCenterY = cY !== undefined ? cY : (((top + cardH/2) / window.innerHeight) * 100);
-
+        function broadcastCardUpdate(el, isLand = false, rX = 0.5, rY = 0.5) {
             sendNetwork('BOARD_CARD_UPDATE', {
                 id: el.id,
                 cardNum: el.dataset.cardNum,
-                centerX: finalCenterX,
-                centerY: finalCenterY,
+                isLand: isLand,
+                relX: rX,
+                relY: rY,
                 tapped: el.classList.contains('tapped')
             });
         }
 
+        // ฝั่งตรงข้ามรับข้อมูลและวาดลงในกรอบสนามบน (#opp-battlefield) แบบสมมาตรเป๊ะ
         function renderOpponentBoardCard(data) {
             let el = document.getElementById(data.id);
-            const cardW = 76;
-            const cardH = 110;
+            const cardW = 72;
+            const cardH = 104;
+            const centerBox = document.getElementById('center-land-zone').getBoundingClientRect();
+            const oppFieldBox = document.getElementById('opp-battlefield').getBoundingClientRect();
 
-            // สะท้อนกลับพิกัดสมมาตร: 100 - X, 100 - Y (ตกในสี่เหลี่ยมสีชมพูด้านบนเป๊ะ)
-            const oppCenterX = 100 - data.centerX;
-            const oppCenterY = 100 - data.centerY;
+            let targetLeft = 0, targetTop = 0;
 
-            const targetLeft = (oppCenterX * window.innerWidth / 100) - (cardW / 2);
-            const targetTop = (oppCenterY * window.innerHeight / 100) - (cardH / 2);
+            if (data.isLand) {
+                targetLeft = centerBox.left + (centerBox.width - cardW) / 2;
+                targetTop = centerBox.top + (centerBox.height - cardH) / 2;
+            } else {
+                // สมมาตรกลับด้านในกรอบสนามบน: (1 - relX), (1 - relY)
+                targetLeft = oppFieldBox.left + (1 - data.relX) * (oppFieldBox.width - cardW);
+                targetTop = oppFieldBox.top + (1 - data.relY) * (oppFieldBox.height - cardH);
+            }
 
             if (!el) {
                 el = createBoardCard(data.id, data.cardNum, targetLeft, targetTop, true);
@@ -913,7 +1012,7 @@
             el.classList.toggle('tapped', data.tapped);
         }
 
-        // --- 6. ระบบเปิดเลือกการ์ดในกอง (Scry / Search Deck) ---
+        // --- ระบบเปิดเลือกการ์ดในกอง ---
         function openDeckSelector() {
             revealedCards = [];
             renderRevealedCards();
@@ -971,7 +1070,7 @@
             syncAllCounts();
         }
 
-        // --- 7. ดูการ์ดใน นรก / มิติมืด ---
+        // --- ดูการ์ดใน นรก / มิติมืด ---
         function openZoneViewer(zone) {
             const list = zone === 'hell' ? inGameHell : inGameBanish;
             document.getElementById('viewer-title').innerText = zone === 'hell' ? '🔥 การ์ดในนรก' : '🌌 การ์ดในมิติมืด';
